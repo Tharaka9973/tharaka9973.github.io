@@ -1,11 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Game Site</title>
+  <title>Game Hub</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: orange;
+      color: black;
+      cursor: pointer;
+    }
+    button:hover {
+      background: yellow;
+    }
+  </style>
 </head>
-<body style="text-align:center; font-family:sans-serif;">
-  <h1>🔥 Welcome Tharaka!</h1>
-  <p>Me mage palaweni website eka.</p>
-  <p>Play games and more coming soon 🚀</p>
+<body>
+
+  <h1>🎮 Game Hub 🔥</h1>
+  <p>Click and earn points!</p>
+
+  <h2 id="score">Score: 0</h2>
+
+  <button onclick="playGame()">PLAY GAME</button>
+
+  <script>
+    let score = 0;
+
+    function playGame() {
+      score++;
+      document.getElementById("score").innerText = "Score: " + score;
+    }
+  </script>
+
 </body>
 </html>
