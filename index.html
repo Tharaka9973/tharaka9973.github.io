@@ -1,832 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auth Page</title>
-  <style>
-    :root {
-      --bg1: #0f172a;
-      --bg2: #1e293b;
-      --card: rgba(255, 255, 255, 0.08);
-      --border: rgba(255, 255, 255, 0.16);
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-2: #22c55e;
-      --danger: #f87171;
-      --warning: #fbbf24;
-      --shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.14), transparent 24%),
-        linear-gradient(135deg, var(--bg1), var(--bg2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .shell {
-      width: 100%;
-      max-width: 1080px;
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 22px;
-    }
-
-    .hero,
-    .panel,
-    .home-card {
-      background: var(--card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-    }
-
-    .hero {
-      padding: 38px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 680px;
-    }
-
-    .hero h1 {
-      margin: 0 0 14px;
-      font-size: 48px;
-      line-height: 1.05;
-    }
-
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 17px;
-      max-width: 540px;
-      line-height: 1.7;
-    }
-
-    .badge-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .badge {
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      font-size: 14px;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 28px;
-    }
-
-    .feature {
-      padding: 18px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .feature h3 {
-      margin: 0 0 8px;
-      font-size: 17px;
-    }
-
-    .feature p {
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .panel {
-      padding: 26px;
-      min-height: 680px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 18px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 8px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-    }
-
-    .tab-btn {
-      border: 0;
-      background: transparent;
-      color: var(--text);
-      padding: 14px;
-      font-size: 15px;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(34, 197, 94, 0.18));
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
-    }
-
-    .form-box {
-      display: none;
-    }
-
-    .form-box.active {
-      display: block;
-    }
-
-    .title {
-      margin: 8px 0 6px;
-      font-size: 32px;
-    }
-
-    .subtitle {
-      margin: 0 0 24px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    .label-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-      align-items: center;
-    }
-
-    label {
-      font-size: 14px;
-      color: #dbeafe;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    input {
-      width: 100%;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(15, 23, 42, 0.72);
-      color: var(--text);
-      padding: 14px 16px;
-      border-radius: 16px;
-      outline: none;
-      font-size: 15px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    input:focus {
-      border-color: rgba(56, 189, 248, 0.8);
-      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
-    }
-
-    .password-checks {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .check {
-      font-size: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      background: rgba(255,255,255,0.04);
-    }
-
-    .check.ok {
-      color: #bbf7d0;
-      border-color: rgba(34, 197, 94, 0.32);
-      background: rgba(34, 197, 94, 0.08);
-    }
-
-    .message {
-      display: none;
-      margin: 4px 0 16px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .message.show {
-      display: block;
-    }
-
-    .message.error {
-      background: rgba(248, 113, 113, 0.12);
-      border: 1px solid rgba(248, 113, 113, 0.28);
-      color: #fecaca;
-    }
-
-    .message.success {
-      background: rgba(34, 197, 94, 0.12);
-      border: 1px solid rgba(34, 197, 94, 0.28);
-      color: #bbf7d0;
-    }
-
-    .primary-btn,
-    .secondary-btn {
-      width: 100%;
-      border: 0;
-      cursor: pointer;
-      border-radius: 18px;
-      padding: 15px 18px;
-      font-size: 16px;
-      font-weight: 700;
-      transition: transform 0.15s ease, opacity 0.2s ease;
-    }
-
-    .primary-btn:hover,
-    .secondary-btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .primary-btn {
-      color: #081018;
-      background: linear-gradient(135deg, #38bdf8, #22c55e);
-      margin-top: 6px;
-    }
-
-    .secondary-btn {
-      margin-top: 12px;
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-    }
-
-    .switch-row {
-      text-align: center;
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .switch-row button {
-      background: none;
-      border: 0;
-      color: var(--accent);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 700;
-      padding: 0;
-    }
-
-    .home-screen {
-      display: none;
-      width: 100%;
-      max-width: 980px;
-    }
-
-    .home-screen.active {
-      display: block;
-    }
-
-    .home-card {
-      padding: 34px;
-    }
-
-    .home-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 22px;
-    }
-
-    .welcome {
-      font-size: 40px;
-      margin: 0;
-    }
-
-    .home-sub {
-      margin: 8px 0 0;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .mini-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-      margin-top: 28px;
-    }
-
-    .mini-card {
-      padding: 20px;
-      border-radius: 22px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05);
-    }
-
-    .mini-card h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-
-    .mini-card p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .email-box {
-      margin-top: 26px;
-      padding: 16px 18px;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
-      color: #cbd5e1;
-    }
-
-    @media (max-width: 920px) {
-      .shell {
-        grid-template-columns: 1fr;
-      }
-
-      .hero,
-      .panel {
-        min-height: auto;
-      }
-    }
-
-    @media (max-width: 640px) {
-      body {
-        padding: 14px;
-      }
-
-      .hero,
-      .panel,
-      .home-card {
-        border-radius: 22px;
-      }
-
-      .hero h1,
-      .welcome {
-        font-size: 32px;
-      }
-
-      .feature-grid,
-      .mini-grid,
-      .password-checks {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Auth System</title>
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh}
+.container{width:100%;max-width:400px;background:#1e293b;padding:25px;border-radius:20px}
+input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none}
+button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;background:#38bdf8;color:#000;font-weight:bold;cursor:pointer}
+button:hover{background:#22c55e}
+.link{color:#38bdf8;cursor:pointer;text-align:center;margin-top:10px}
+.error{color:red;font-size:13px}
+.success{color:lightgreen;font-size:13px}
+.hidden{display:none}
+</style>
 </head>
 <body>
-  <div id="authApp" class="shell">
-    <section class="hero">
-      <div>
-        <div class="badge-row">
-          <div class="badge">Secure Sign-Up</div>
-          <div class="badge">Auto Sign-In</div>
-          <div class="badge">Local Database</div>
-        </div>
-        <h1>Create your account in a clean, modern way.</h1>
-        <p>
-          Me page eka sign-up, sign-in, validation, auto login, unique username check,
-          single account per email, saha browser local storage database ekak ekka wada karanawa.
-        </p>
-        <div class="feature-grid">
-          <div class="feature">
-            <h3>Email Validation</h3>
-            <p>Correct email format ekakda kiyala balala invalid emails reject karanawa.</p>
-          </div>
-          <div class="feature">
-            <h3>Unique Username</h3>
-            <p>Kalin use karapu username ekak nam aluth account ekata denna ba.</p>
-          </div>
-          <div class="feature">
-            <h3>Strong Password Rules</h3>
-            <p>Capital, small, number, symbol saha minimum characters check karanawa.</p>
-          </div>
-          <div class="feature">
-            <h3>Instant Login</h3>
-            <p>Sign-up success unama user auto sign-in wela home page ekata yai.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="tabs">
-        <button id="signupTab" class="tab-btn active" type="button">Sign Up</button>
-        <button id="signinTab" class="tab-btn" type="button">Sign In</button>
-      </div>
-
-      <div id="signupBox" class="form-box active">
-        <h2 class="title">Create account</h2>
-        <p class="subtitle">Sign up karala direct home page ekata yanna.</p>
-        <div id="signupMessage" class="message"></div>
-
-        <form id="signupForm" novalidate>
-          <div class="field">
-            <div class="label-row">
-              <label for="signupEmail">Email</label>
-              <span class="hint">One account per email</span>
-            </div>
-            <input id="signupEmail" type="email" placeholder="Enter your email" autocomplete="email" />
-          </div>
-
-          <div class="field">
-            <div class="label-row">
-              <label for="signupUsername">User Name</label>
-              <span class="hint">Must be unique</span>
-            </div>
-            <input id="signupUsername" type="text" placeholder="Choose a user name" autocomplete="username" />
-          </div>
-
-          <div class="field">
-            <div class="label-row">
-              <label for="signupPassword">Password</label>
-              <span class="hint">Strong password required</span>
-            </div>
-            <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password" />
-            <div class="password-checks">
-              <div id="checkLength" class="check">At least 8 characters</div>
-              <div id="checkUpper" class="check">1 uppercase letter</div>
-              <div id="checkLower" class="check">1 lowercase letter</div>
-              <div id="checkNumber" class="check">1 number</div>
-              <div id="checkSymbol" class="check">1 symbol</div>
-            </div>
-          </div>
-
-          <button class="primary-btn" type="submit">Create Account</button>
-        </form>
-
-        <div class="switch-row">
-          Already have an account?
-          <button type="button" id="gotoSignin">Or Sign In</button>
-        </div>
-      </div>
-
-      <div id="signinBox" class="form-box">
-        <h2 class="title">Welcome back</h2>
-        <p class="subtitle">Email saha password ekka sign in wenna.</p>
-        <div id="signinMessage" class="message"></div>
-
-        <form id="signinForm" novalidate>
-          <div class="field">
-            <div class="label-row">
-              <label for="signinEmail">Email</label>
-              <span class="hint">Use your registered email</span>
-            </div>
-            <input id="signinEmail" type="email" placeholder="Enter your email" autocomplete="email" />
-          </div>
-
-          <div class="field">
-            <div class="label-row">
-              <label for="signinPassword">Password</label>
-              <span class="hint">Enter your password</span>
-            </div>
-            <input id="signinPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
-          </div>
-
-          <button class="primary-btn" type="submit">Sign In</button>
-          <button class="secondary-btn" type="button" id="clearDatabase">Clear Local Database</button>
-        </form>
-
-        <div class="switch-row">
-          Need a new account?
-          <button type="button" id="gotoSignup">Go to Sign Up</button>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <div id="homeScreen" class="home-screen">
-    <div class="home-card">
-      <div class="home-top">
-        <div>
-          <h1 class="welcome">Hello, <span id="homeUsername">User</span> 👋</h1>
-          <p class="home-sub">Oyā sign in wela inne. Me home page eka auto open una sign-up/sign-in success nisa.</p>
-        </div>
-        <button id="logoutBtn" class="primary-btn" style="width:auto; min-width:160px;">Log Out</button>
-      </div>
-
-      <div class="mini-grid">
-        <div class="mini-card">
-          <h3>Signed In Status</h3>
-          <p>User session eka browser local storage walin maintain karanawa.</p>
-        </div>
-        <div class="mini-card">
-          <h3>Unique User Rules</h3>
-          <p>Email ekata eka account ekak witharai. Username duplicate wenna ba.</p>
-        </div>
-        <div class="mini-card">
-          <h3>Ready to Extend</h3>
-          <p>Oya next step eke backend API hari real database ekak set karanna puluwan.</p>
-        </div>
-      </div>
-
-      <div class="email-box">
-        Signed in email: <strong id="homeEmail">example@email.com</strong>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const DB_KEY = 'auth_demo_users_db';
-    const SESSION_KEY = 'auth_demo_current_user';
-
-    const signupTab = document.getElementById('signupTab');
-    const signinTab = document.getElementById('signinTab');
-    const signupBox = document.getElementById('signupBox');
-    const signinBox = document.getElementById('signinBox');
-    const authApp = document.getElementById('authApp');
-    const homeScreen = document.getElementById('homeScreen');
-    const homeUsername = document.getElementById('homeUsername');
-    const homeEmail = document.getElementById('homeEmail');
-
-    const signupForm = document.getElementById('signupForm');
-    const signinForm = document.getElementById('signinForm');
-    const signupMessage = document.getElementById('signupMessage');
-    const signinMessage = document.getElementById('signinMessage');
-
-    const signupEmail = document.getElementById('signupEmail');
-    const signupUsername = document.getElementById('signupUsername');
-    const signupPassword = document.getElementById('signupPassword');
-    const signinEmail = document.getElementById('signinEmail');
-    const signinPassword = document.getElementById('signinPassword');
-
-    const passwordChecks = {
-      length: document.getElementById('checkLength'),
-      upper: document.getElementById('checkUpper'),
-      lower: document.getElementById('checkLower'),
-      number: document.getElementById('checkNumber'),
-      symbol: document.getElementById('checkSymbol')
-    };
-
-    function getUsers() {
-      try {
-        return JSON.parse(localStorage.getItem(DB_KEY)) || [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveUsers(users) {
-      localStorage.setItem(DB_KEY, JSON.stringify(users));
-    }
-
-    function setSession(user) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-    }
-
-    function getSession() {
-      try {
-        return JSON.parse(localStorage.getItem(SESSION_KEY));
-      } catch {
-        return null;
-      }
-    }
-
-    function clearSession() {
-      localStorage.removeItem(SESSION_KEY);
-    }
-
-    function normalizeEmail(email) {
-      return email.trim().toLowerCase();
-    }
-
-    function normalizeUsername(username) {
-      return username.trim().toLowerCase();
-    }
-
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function checkPasswordStrength(password) {
-      return {
-        length: password.length >= 8,
-        upper: /[A-Z]/.test(password),
-        lower: /[a-z]/.test(password),
-        number: /[0-9]/.test(password),
-        symbol: /[^A-Za-z0-9]/.test(password)
-      };
-    }
-
-    function isStrongPassword(password) {
-      const result = checkPasswordStrength(password);
-      return Object.values(result).every(Boolean);
-    }
-
-    function updatePasswordUI(password) {
-      const result = checkPasswordStrength(password);
-      passwordChecks.length.classList.toggle('ok', result.length);
-      passwordChecks.upper.classList.toggle('ok', result.upper);
-      passwordChecks.lower.classList.toggle('ok', result.lower);
-      passwordChecks.number.classList.toggle('ok', result.number);
-      passwordChecks.symbol.classList.toggle('ok', result.symbol);
-    }
-
-    function showMessage(el, type, text) {
-      el.className = `message show ${type}`;
-      el.textContent = text;
-    }
-
-    function hideMessage(el) {
-      el.className = 'message';
-      el.textContent = '';
-    }
-
-    function showSignup() {
-      signupTab.classList.add('active');
-      signinTab.classList.remove('active');
-      signupBox.classList.add('active');
-      signinBox.classList.remove('active');
-      hideMessage(signupMessage);
-      hideMessage(signinMessage);
-    }
-
-    function showSignin() {
-      signinTab.classList.add('active');
-      signupTab.classList.remove('active');
-      signinBox.classList.add('active');
-      signupBox.classList.remove('active');
-      hideMessage(signupMessage);
-      hideMessage(signinMessage);
-    }
-
-    function openHome(user) {
-      authApp.style.display = 'none';
-      homeScreen.classList.add('active');
-      homeUsername.textContent = user.username;
-      homeEmail.textContent = user.email;
-    }
-
-    function openAuth() {
-      homeScreen.classList.remove('active');
-      authApp.style.display = 'grid';
-    }
-
-    signupTab.addEventListener('click', showSignup);
-    signinTab.addEventListener('click', showSignin);
-    document.getElementById('gotoSignin').addEventListener('click', showSignin);
-    document.getElementById('gotoSignup').addEventListener('click', showSignup);
-
-    signupPassword.addEventListener('input', () => updatePasswordUI(signupPassword.value));
-
-    signupForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      hideMessage(signupMessage);
-
-      const email = normalizeEmail(signupEmail.value);
-      const username = signupUsername.value.trim();
-      const usernameNormalized = normalizeUsername(signupUsername.value);
-      const password = signupPassword.value;
-
-      if (!email || !username || !password) {
-        showMessage(signupMessage, 'error', 'Please fill all sign-up fields.');
-        return;
-      }
-
-      if (!isValidEmail(email)) {
-        showMessage(signupMessage, 'error', 'Please enter a correct email address.');
-        return;
-      }
-
-      if (username.length < 3) {
-        showMessage(signupMessage, 'error', 'User name must have at least 3 characters.');
-        return;
-      }
-
-      if (!isStrongPassword(password)) {
-        showMessage(signupMessage, 'error', 'Password must include uppercase, lowercase, number, symbol, and 8+ characters.');
-        return;
-      }
-
-      const users = getUsers();
-      const emailExists = users.some(user => user.email === email);
-      const usernameExists = users.some(user => normalizeUsername(user.username) === usernameNormalized);
-
-      if (emailExists) {
-        showMessage(signupMessage, 'error', 'This email already has an account. Please sign in.');
-        return;
-      }
-
-      if (usernameExists) {
-        showMessage(signupMessage, 'error', 'This user name is already taken. Choose another one.');
-        return;
-      }
-
-      const newUser = {
-        id: Date.now(),
-        email,
-        username,
-        password
-      };
-
-      users.push(newUser);
-      saveUsers(users);
-      setSession({ email: newUser.email, username: newUser.username, id: newUser.id });
-
-      showMessage(signupMessage, 'success', 'Account created successfully. Redirecting to home page...');
-
-      signupForm.reset();
-      updatePasswordUI('');
-
-      setTimeout(() => {
-        openHome(newUser);
-      }, 700);
-    });
-
-    signinForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      hideMessage(signinMessage);
-
-      const email = normalizeEmail(signinEmail.value);
-      const password = signinPassword.value;
-
-      if (!email || !password) {
-        showMessage(signinMessage, 'error', 'Please enter email and password.');
-        return;
-      }
-
-      if (!isValidEmail(email)) {
-        showMessage(signinMessage, 'error', 'Please enter a correct email address.');
-        return;
-      }
-
-      const users = getUsers();
-      const foundUser = users.find(user => user.email === email && user.password === password);
-
-      if (!foundUser) {
-        showMessage(signinMessage, 'error', 'Invalid email or password.');
-        return;
-      }
-
-      setSession({ email: foundUser.email, username: foundUser.username, id: foundUser.id });
-      showMessage(signinMessage, 'success', 'Sign in successful. Redirecting to home page...');
-
-      signinForm.reset();
-
-      setTimeout(() => {
-        openHome(foundUser);
-      }, 500);
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      clearSession();
-      openAuth();
-      showSignin();
-    });
-
-    document.getElementById('clearDatabase').addEventListener('click', () => {
-      localStorage.removeItem(DB_KEY);
-      clearSession();
-      hideMessage(signinMessage);
-      hideMessage(signupMessage);
-      alert('Local database cleared.');
-    });
-
-    window.addEventListener('load', () => {
-      updatePasswordUI('');
-      const sessionUser = getSession();
-      if (sessionUser) {
-        openHome(sessionUser);
-      } else {
-        showSignup();
-      }
-    });
-  </script>
+
+<div class="container" id="authBox">
+
+<h2 id="title">Sign Up</h2>
+
+<div id="msg"></div>
+
+<input type="text" id="username" placeholder="Username">
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<input type="password" id="confirm" placeholder="Confirm Password">
+
+<button onclick="signup()" id="signupBtn">Sign Up</button>
+<button onclick="signin()" id="signinBtn" class="hidden">Sign In</button>
+
+<div class="link" onclick="toggleMode()" id="toggleText">Already have account? Sign In</div>
+
+</div>
+
+<div class="container hidden" id="homeBox">
+<h2>Welcome <span id="userDisplay"></span> 👋</h2>
+<p id="emailDisplay"></p>
+<button onclick="logout()">Logout</button>
+</div>
+
+<script>
+let mode="signup";
+
+function getUsers(){return JSON.parse(localStorage.getItem("users")||"[]")}
+function saveUsers(u){localStorage.setItem("users",JSON.stringify(u))}
+function setSession(u){localStorage.setItem("session",JSON.stringify(u))}
+function getSession(){return JSON.parse(localStorage.getItem("session"))}
+
+function showMsg(text,type){
+let m=document.getElementById("msg");
+m.innerHTML=text;
+m.className=type;
+}
+
+function validateEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
+function validatePassword(p){return /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}/.test(p)}
+
+function signup(){
+let u=document.getElementById("username").value.trim();
+let e=document.getElementById("email").value.trim().toLowerCase();
+let p=document.getElementById("password").value;
+let c=document.getElementById("confirm").value;
+
+if(!u||!e||!p||!c){showMsg("Fill all fields","error");return}
+if(!validateEmail(e)){showMsg("Invalid email","error");return}
+if(!validatePassword(p)){showMsg("Weak password","error");return}
+if(p!==c){showMsg("Passwords not match","error");return}
+
+let users=getUsers();
+if(users.find(x=>x.email===e)){showMsg("Email already used","error");return}
+if(users.find(x=>x.username.toLowerCase()===u.toLowerCase())){showMsg("Username taken","error");return}
+
+let newUser={username:u,email:e,password:p};
+users.push(newUser);
+saveUsers(users);
+setSession(newUser);
+showHome(newUser);
+}
+
+function signin(){
+let e=document.getElementById("email").value.trim().toLowerCase();
+let p=document.getElementById("password").value;
+
+let users=getUsers();
+let user=users.find(x=>x.email===e&&x.password===p);
+if(!user){showMsg("Invalid login","error");return}
+
+setSession(user);
+showHome(user);
+}
+
+function showHome(user){
+document.getElementById("authBox").classList.add("hidden");
+document.getElementById("homeBox").classList.remove("hidden");
+document.getElementById("userDisplay").innerText=user.username;
+document.getElementById("emailDisplay").innerText=user.email;
+}
+
+function logout(){localStorage.removeItem("session");location.reload()}
+
+function toggleMode(){
+mode = mode === "signup" ? "signin" : "signup";
+
+document.getElementById("title").innerText = mode === "signup" ? "Sign Up" : "Sign In";
+document.getElementById("signupBtn").classList.toggle("hidden", mode !== "signup");
+document.getElementById("signinBtn").classList.toggle("hidden", mode !== "signin");
+document.getElementById("confirm").classList.toggle("hidden", mode !== "signup");
+document.getElementById("username").classList.toggle("hidden", mode !== "signup");
+document.getElementById("toggleText").innerText = mode === "signup" ? "Already have account? Sign In" : "No account? Sign Up";
+
+showMsg("","");
+}
+
+window.onload=function(){
+let s=getSession();
+if(s) showHome(s);
+}
+</script>
+
 </body>
 </html>
