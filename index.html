@@ -1,125 +1,1719 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Auth System</title>
-<style>
-body{margin:0;font-family:Arial;background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh}
-.container{width:100%;max-width:400px;background:#1e293b;padding:25px;border-radius:20px}
-input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:none}
-button{width:100%;padding:12px;margin-top:10px;border:none;border-radius:10px;background:#38bdf8;color:#000;font-weight:bold;cursor:pointer}
-button:hover{background:#22c55e}
-.link{color:#38bdf8;cursor:pointer;text-align:center;margin-top:10px}
-.error{color:red;font-size:13px}
-.success{color:lightgreen;font-size:13px}
-.hidden{display:none}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Auth + Game Home</title>
+  <style>
+    :root {
+      --bg-1: #081120;
+      --bg-2: #0f172a;
+      --bg-3: #172554;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-2: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #e5eefc;
+      --muted: #9fb2d1;
+      --primary: #38bdf8;
+      --secondary: #8b5cf6;
+      --success: #22c55e;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 25%),
+        radial-gradient(circle at top right, rgba(139, 92, 246, 0.14), transparent 20%),
+        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.08), transparent 18%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .auth-wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .auth-shell {
+      width: 100%;
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+    }
+
+    .hero-panel,
+    .form-panel,
+    .home-shell,
+    .page-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-panel {
+      padding: 38px;
+      min-height: 720px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow,
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(10px);
+      animation: floatOrb 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .hero-glow.one {
+      width: 240px;
+      height: 240px;
+      background: rgba(56, 189, 248, 0.16);
+      top: -60px;
+      right: -40px;
+    }
+
+    .hero-glow.two {
+      width: 180px;
+      height: 180px;
+      background: rgba(139, 92, 246, 0.18);
+      bottom: 40px;
+      left: -40px;
+      animation-delay: 1s;
+    }
+
+    .hero-panel h1 {
+      margin: 0 0 12px;
+      font-size: 52px;
+      line-height: 1.04;
+      max-width: 580px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-panel p {
+      margin: 0;
+      max-width: 560px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tag {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: #d7e7ff;
+    }
+
+    .hero-cards {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .mini-feature {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .mini-feature:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.35);
+      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .mini-feature h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .mini-feature p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .auth-preview {
+      margin-top: 28px;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(139, 92, 246, 0.08));
+      position: relative;
+      z-index: 2;
+    }
+
+    .preview-top {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .preview-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.32);
+    }
+
+    .preview-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .preview-line {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      margin-bottom: 10px;
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+
+    .preview-line.short { width: 58%; }
+    .preview-line.med { width: 74%; }
+    .preview-line.long { width: 92%; }
+
+    .form-panel {
+      padding: 26px;
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      padding: 8px;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+
+    .tab-btn,
+    .action-btn,
+    .ghost-btn,
+    .nav-btn,
+    .play-btn,
+    .logout-btn {
+      border: 0;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .tab-btn {
+      padding: 14px;
+      border-radius: 12px;
+      color: var(--text);
+      background: transparent;
+      font-size: 15px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(139, 92, 246, 0.2));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    .tab-btn:hover,
+    .action-btn:hover,
+    .ghost-btn:hover,
+    .nav-btn:hover,
+    .play-btn:hover,
+    .logout-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .form-box {
+      display: none;
+    }
+
+    .form-box.active {
+      display: block;
+    }
+
+    .form-title {
+      margin: 8px 0 6px;
+      font-size: 34px;
+    }
+
+    .form-subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .message {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .message.show { display: block; }
+
+    .message.error {
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: #fecaca;
+    }
+
+    .message.success {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.28);
+      color: #bbf7d0;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #dbeafe;
+    }
+
+    .field-hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(3, 11, 25, 0.62);
+      color: var(--text);
+      padding: 15px 16px;
+      border-radius: 16px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      border-color: rgba(56, 189, 248, 0.78);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .password-checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .check {
+      font-size: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .check.ok {
+      color: #c4f8d4;
+      border-color: rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .action-btn,
+    .ghost-btn,
+    .play-btn,
+    .logout-btn,
+    .nav-btn {
+      padding: 15px 18px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .action-btn {
+      width: 100%;
+      color: #07131f;
+      background: linear-gradient(135deg, var(--primary), var(--success));
+      box-shadow: 0 14px 24px rgba(56, 189, 248, 0.18);
+      margin-top: 6px;
+    }
+
+    .ghost-btn {
+      width: 100%;
+      margin-top: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .switch-text {
+      margin-top: 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .switch-link {
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .home-wrap {
+      display: none;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .home-wrap.active {
+      display: block;
+    }
+
+    .home-shell {
+      width: 100%;
+      max-width: 1320px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 22px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 12px 24px rgba(56, 189, 248, 0.18);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .logout-btn {
+      color: #08131f;
+      background: linear-gradient(135deg, #fbbf24, #fb7185);
+    }
+
+    .home-content {
+      padding: 26px;
+    }
+
+    .hero-home {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.2), transparent 22%),
+        radial-gradient(circle at 85% 18%, rgba(139, 92, 246, 0.18), transparent 20%),
+        linear-gradient(135deg, rgba(7, 16, 31, 0.86), rgba(17, 24, 39, 0.8));
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .hero-home h1 {
+      margin: 0 0 12px;
+      font-size: 48px;
+      line-height: 1.05;
+    }
+
+    .hero-home p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.8;
+      max-width: 620px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .play-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 16px 28px rgba(56, 189, 248, 0.18);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      animation: riseIn 0.6s ease both;
+    }
+
+    .stat h3 {
+      margin: 0;
+      font-size: 28px;
+      color: white;
+    }
+
+    .stat p {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .hero-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 320px;
+    }
+
+    .game-screen {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+      transform: perspective(1200px) rotateY(-8deg) rotateX(6deg);
+      animation: floatCard 5s ease-in-out infinite;
+    }
+
+    .screen-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .screen-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.34);
+    }
+
+    .screen-banner {
+      height: 140px;
+      border-radius: 22px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+      background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');
+    }
+
+    .screen-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.55), transparent 60%);
+    }
+
+    .screen-info {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .screen-chip {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: #d9e7ff;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: end;
+      margin: 34px 0 18px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .section-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .game-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+      animation: riseIn 0.7s ease both;
+    }
+
+    .game-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 24px 36px rgba(0,0,0,0.22);
+      border-color: rgba(56, 189, 248, 0.34);
+    }
+
+    .game-image {
+      position: relative;
+      height: 210px;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+
+    .game-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(3, 8, 18, 0.82), rgba(3, 8, 18, 0.08));
+    }
+
+    .badge-live {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 1;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid rgba(34, 197, 94, 0.28);
+      color: #d7ffdf;
+    }
+
+    .game-body {
+      padding: 18px;
+    }
+
+    .game-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .game-title-row h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .rating {
+      font-size: 13px;
+      color: #fde68a;
+    }
+
+    .game-body p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .meta-chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: #cfe0ff;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .card-actions .play-btn,
+    .card-actions .nav-btn {
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .feature-band {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature-box {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .feature-box:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.07);
+    }
+
+    .feature-box h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .feature-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .cta-banner {
+      margin-top: 34px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(139, 92, 246, 0.12));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .cta-banner h2 {
+      margin: 0 0 10px;
+      font-size: 30px;
+    }
+
+    .cta-banner p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 700px;
+    }
+
+    .footer {
+      margin-top: 34px;
+      padding: 18px 6px 6px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .pages-wrap {
+      display: none;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .pages-wrap.active {
+      display: block;
+    }
+
+    .pages-shell {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .page-card {
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .page-card h1 {
+      margin-top: 0;
+      font-size: 36px;
+    }
+
+    .page-card p,
+    .page-card li {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .back-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    @keyframes floatOrb {
+      0%,100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-14px) translateX(10px); }
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 0.45; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes floatCard {
+      0%,100% { transform: perspective(1200px) rotateY(-8deg) rotateX(6deg) translateY(0); }
+      50% { transform: perspective(1200px) rotateY(-6deg) rotateX(4deg) translateY(-10px); }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1100px) {
+      .auth-shell,
+      .hero-home {
+        grid-template-columns: 1fr;
+      }
+
+      .game-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .feature-band {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .hero-panel,
+      .form-panel {
+        min-height: auto;
+      }
+
+      .hero-panel h1,
+      .hero-home h1 {
+        font-size: 38px;
+      }
+
+      .hero-cards,
+      .stats,
+      .game-grid,
+      .feature-band,
+      .password-checks {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar,
+      .home-content {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .hero-home,
+      .cta-banner {
+        padding: 22px;
+      }
+
+      .game-screen {
+        transform: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="authWrap" class="auth-wrap">
+    <div class="auth-shell">
+      <section class="hero-panel">
+        <div class="hero-glow one"></div>
+        <div class="hero-glow two"></div>
+        <div class="tag-row">
+          <div class="tag">Modern UI</div>
+          <div class="tag">Strong Validation</div>
+          <div class="tag">Animated Home Page</div>
+        </div>
+        <h1>Sign up and enter a stylish game world.</h1>
+        <p>
+          Me single-file project eka sign-up, sign-in, unique username check,
+          strong password validation, auto login, session save, saha user friendly animated game home page ekak ekka enawa.
+        </p>
 
-<div class="container" id="authBox">
+        <div class="hero-cards">
+          <div class="mini-feature">
+            <h3>Smart Account Rules</h3>
+            <p>Email format balala invalid emails reject karanawa. Eka email ekata eka account ekai.</p>
+          </div>
+          <div class="mini-feature">
+            <h3>Unique Username</h3>
+            <p>Kalin use karapu username ekak nam aluth account ekata danna ba.</p>
+          </div>
+          <div class="mini-feature">
+            <h3>Secure Password Checks</h3>
+            <p>Uppercase, lowercase, number, symbol, saha character limit check karanawa.</p>
+          </div>
+          <div class="mini-feature">
+            <h3>Auto Sign In</h3>
+            <p>Sign-up success una gaman user home page ekata gihin welcome screen penwanawa.</p>
+          </div>
+        </div>
 
-<h2 id="title">Sign Up</h2>
+        <div class="auth-preview">
+          <div class="preview-top">
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-line long"></div>
+            <div class="preview-line med"></div>
+            <div class="preview-line short"></div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-line long"></div>
+            <div class="preview-line short"></div>
+          </div>
+        </div>
+      </section>
 
-<div id="msg"></div>
+      <section class="form-panel">
+        <div class="tabs">
+          <button id="signupTab" class="tab-btn active" type="button">Sign Up</button>
+          <button id="signinTab" class="tab-btn" type="button">Sign In</button>
+        </div>
 
-<input type="text" id="username" placeholder="Username">
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-<input type="password" id="confirm" placeholder="Confirm Password">
+        <div id="signupBox" class="form-box active">
+          <h2 class="form-title">Create Account</h2>
+          <p class="form-subtitle">Lassanama profile ekak hadala game home page ekata yanna.</p>
+          <div id="signupMessage" class="message"></div>
 
-<button onclick="signup()" id="signupBtn">Sign Up</button>
-<button onclick="signin()" id="signinBtn" class="hidden">Sign In</button>
+          <form id="signupForm" novalidate>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupUsername">User Name</label>
+                <span class="field-hint">Must be unique</span>
+              </div>
+              <input id="signupUsername" type="text" placeholder="Choose a user name" autocomplete="username" />
+            </div>
 
-<div class="link" onclick="toggleMode()" id="toggleText">Already have account? Sign In</div>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupEmail">Email</label>
+                <span class="field-hint">One account per email</span>
+              </div>
+              <input id="signupEmail" type="email" placeholder="Enter your email" autocomplete="email" />
+            </div>
 
-</div>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupPassword">Password</label>
+                <span class="field-hint">Strong password required</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password" />
+                <button class="eye-btn" type="button" data-toggle="signupPassword">Show</button>
+              </div>
+              <div class="password-checks">
+                <div id="checkLength" class="check">At least 8 characters</div>
+                <div id="checkUpper" class="check">1 uppercase letter</div>
+                <div id="checkLower" class="check">1 lowercase letter</div>
+                <div id="checkNumber" class="check">1 number</div>
+                <div id="checkSymbol" class="check">1 symbol</div>
+              </div>
+            </div>
 
-<div class="container hidden" id="homeBox">
-<h2>Welcome <span id="userDisplay"></span> 👋</h2>
-<p id="emailDisplay"></p>
-<button onclick="logout()">Logout</button>
-</div>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupConfirmPassword">Confirm Password</label>
+                <span class="field-hint">Must match password</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signupConfirmPassword" type="password" placeholder="Confirm your password" autocomplete="new-password" />
+                <button class="eye-btn" type="button" data-toggle="signupConfirmPassword">Show</button>
+              </div>
+            </div>
 
-<script>
-let mode="signup";
+            <button class="action-btn" type="submit">Create Account</button>
+          </form>
 
-function getUsers(){return JSON.parse(localStorage.getItem("users")||"[]")}
-function saveUsers(u){localStorage.setItem("users",JSON.stringify(u))}
-function setSession(u){localStorage.setItem("session",JSON.stringify(u))}
-function getSession(){return JSON.parse(localStorage.getItem("session"))}
+          <div class="switch-text">
+            Already have an account?
+            <span id="gotoSignin" class="switch-link">Or Sign In</span>
+          </div>
+        </div>
 
-function showMsg(text,type){
-let m=document.getElementById("msg");
-m.innerHTML=text;
-m.className=type;
-}
+        <div id="signinBox" class="form-box">
+          <h2 class="form-title">Welcome Back</h2>
+          <p class="form-subtitle">Email saha password ekka sign in wela home page ekata yanna.</p>
+          <div id="signinMessage" class="message"></div>
 
-function validateEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
-function validatePassword(p){return /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}/.test(p)}
+          <form id="signinForm" novalidate>
+            <div class="field">
+              <div class="label-row">
+                <label for="signinEmail">Email</label>
+                <span class="field-hint">Use registered email</span>
+              </div>
+              <input id="signinEmail" type="email" placeholder="Enter your email" autocomplete="email" />
+            </div>
 
-function signup(){
-let u=document.getElementById("username").value.trim();
-let e=document.getElementById("email").value.trim().toLowerCase();
-let p=document.getElementById("password").value;
-let c=document.getElementById("confirm").value;
+            <div class="field">
+              <div class="label-row">
+                <label for="signinPassword">Password</label>
+                <span class="field-hint">Enter your password</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signinPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
+                <button class="eye-btn" type="button" data-toggle="signinPassword">Show</button>
+              </div>
+            </div>
 
-if(!u||!e||!p||!c){showMsg("Fill all fields","error");return}
-if(!validateEmail(e)){showMsg("Invalid email","error");return}
-if(!validatePassword(p)){showMsg("Weak password","error");return}
-if(p!==c){showMsg("Passwords not match","error");return}
+            <button class="action-btn" type="submit">Sign In</button>
+            <button id="clearDatabase" class="ghost-btn" type="button">Clear Local Database</button>
+          </form>
 
-let users=getUsers();
-if(users.find(x=>x.email===e)){showMsg("Email already used","error");return}
-if(users.find(x=>x.username.toLowerCase()===u.toLowerCase())){showMsg("Username taken","error");return}
+          <div class="switch-text">
+            Need a new account?
+            <span id="gotoSignup" class="switch-link">Go to Sign Up</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 
-let newUser={username:u,email:e,password:p};
-users.push(newUser);
-saveUsers(users);
-setSession(newUser);
-showHome(newUser);
-}
+  <div id="homeWrap" class="home-wrap">
+    <div class="home-shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-logo">🎮</div>
+          <div>GameVerse</div>
+        </div>
+        <div class="top-actions">
+          <button class="nav-btn" data-page-target="homeSection">Home</button>
+          <button class="nav-btn" data-page-target="gamesSection">Games</button>
+          <button class="nav-btn" data-page="aboutPage">About</button>
+          <button class="nav-btn" data-page="contactPage">Contact</button>
+          <button id="logoutBtn" class="logout-btn">Log Out</button>
+        </div>
+      </div>
 
-function signin(){
-let e=document.getElementById("email").value.trim().toLowerCase();
-let p=document.getElementById("password").value;
+      <div class="home-content" id="homeSection">
+        <section class="hero-home">
+          <div>
+            <div class="tag-row">
+              <div class="tag">Welcome Back</div>
+              <div class="tag">Trending Games</div>
+              <div class="tag">Smooth Animations</div>
+            </div>
+            <h1>Hello, <span id="homeUsername">Player</span> 👋</h1>
+            <p>
+              Oya sign in wela inne. Me home page eka user friendly widiyata cards, game images,
+              buttons, hover effects, sections saha smooth animations ekka hadala tiyenne.
+            </p>
+            <div class="hero-buttons">
+              <button class="play-btn" onclick="scrollToGames()">Explore Games</button>
+              <button class="nav-btn" data-page="aboutPage">About Platform</button>
+            </div>
 
-let users=getUsers();
-let user=users.find(x=>x.email===e&&x.password===p);
-if(!user){showMsg("Invalid login","error");return}
+            <div class="stats">
+              <div class="stat">
+                <h3>24+</h3>
+                <p>Mini games styled cards</p>
+              </div>
+              <div class="stat">
+                <h3>4.9★</h3>
+                <p>Player inspired layout</p>
+              </div>
+              <div class="stat">
+                <h3 id="playerEmailShort">Live</h3>
+                <p>Signed in account</p>
+              </div>
+            </div>
+          </div>
 
-setSession(user);
-showHome(user);
-}
+          <div class="hero-visual">
+            <div class="orb" style="width:120px;height:120px;background:rgba(56,189,248,0.16);top:18px;left:20px;"></div>
+            <div class="orb" style="width:90px;height:90px;background:rgba(139,92,246,0.16);bottom:24px;right:24px;animation-delay:1s;"></div>
+            <div class="game-screen">
+              <div class="screen-header">
+                <div class="screen-dot"></div>
+                <div class="screen-dot"></div>
+                <div class="screen-dot"></div>
+              </div>
+              <div class="screen-banner"></div>
+              <div class="screen-info">
+                <div class="screen-chip">Fast-paced arcade</div>
+                <div class="screen-chip">Kids friendly UI</div>
+                <div class="screen-chip">Animated cards</div>
+                <div class="screen-chip">Responsive layout</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-function showHome(user){
-document.getElementById("authBox").classList.add("hidden");
-document.getElementById("homeBox").classList.remove("hidden");
-document.getElementById("userDisplay").innerText=user.username;
-document.getElementById("emailDisplay").innerText=user.email;
-}
+        <div class="section-head" id="gamesSection">
+          <div>
+            <h2>Featured Games</h2>
+            <p>Game images, categories, ratings saha buttons ekka user-friendly cards.</p>
+          </div>
+        </div>
 
-function logout(){localStorage.removeItem("session");location.reload()}
+        <section class="game-grid">
+          <article class="game-card">
+            <div class="game-image" style="background-image:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');">
+              <div class="badge-live">Popular</div>
+            </div>
+            <div class="game-body">
+              <div class="game-title-row">
+                <h3>Speed Runner</h3>
+                <div class="rating">★ 4.9</div>
+              </div>
+              <p>Fast endless runner style card ekak. Bright visuals saha clear call-to-action buttons.</p>
+              <div class="meta-row">
+                <div class="meta-chip">Arcade</div>
+                <div class="meta-chip">1 Player</div>
+                <div class="meta-chip">Action</div>
+              </div>
+              <div class="card-actions">
+                <a class="play-btn" href="#">Play Now</a>
+                <a class="nav-btn" href="#">Details</a>
+              </div>
+            </div>
+          </article>
 
-function toggleMode(){
-mode = mode === "signup" ? "signin" : "signup";
+          <article class="game-card">
+            <div class="game-image" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80');">
+              <div class="badge-live">New</div>
+            </div>
+            <div class="game-body">
+              <div class="game-title-row">
+                <h3>Puzzle Clash</h3>
+                <div class="rating">★ 4.8</div>
+              </div>
+              <p>Colorful puzzle section ekak widiyata use karanna hoda card design with clean spacing.</p>
+              <div class="meta-row">
+                <div class="meta-chip">Puzzle</div>
+                <div class="meta-chip">Brain</div>
+                <div class="meta-chip">Relax</div>
+              </div>
+              <div class="card-actions">
+                <a class="play-btn" href="#">Play Now</a>
+                <a class="nav-btn" href="#">Details</a>
+              </div>
+            </div>
+          </article>
 
-document.getElementById("title").innerText = mode === "signup" ? "Sign Up" : "Sign In";
-document.getElementById("signupBtn").classList.toggle("hidden", mode !== "signup");
-document.getElementById("signinBtn").classList.toggle("hidden", mode !== "signin");
-document.getElementById("confirm").classList.toggle("hidden", mode !== "signup");
-document.getElementById("username").classList.toggle("hidden", mode !== "signup");
-document.getElementById("toggleText").innerText = mode === "signup" ? "Already have account? Sign In" : "No account? Sign Up";
+          <article class="game-card">
+            <div class="game-image" style="background-image:url('https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=1200&q=80');">
+              <div class="badge-live">Hot</div>
+            </div>
+            <div class="game-body">
+              <div class="game-title-row">
+                <h3>Sky Battle</h3>
+                <div class="rating">★ 5.0</div>
+              </div>
+              <p>Animated action section ekak pennanna hoda image card ekak. Hover effect lassanai.</p>
+              <div class="meta-row">
+                <div class="meta-chip">Battle</div>
+                <div class="meta-chip">Shooter</div>
+                <div class="meta-chip">3D Feel</div>
+              </div>
+              <div class="card-actions">
+                <a class="play-btn" href="#">Play Now</a>
+                <a class="nav-btn" href="#">Details</a>
+              </div>
+            </div>
+          </article>
 
-showMsg("","");
-}
+          <article class="game-card">
+            <div class="game-image" style="background-image:url('https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1200&q=80');">
+              <div class="badge-live">Kids</div>
+            </div>
+            <div class="game-body">
+              <div class="game-title-row">
+                <h3>Color Match</h3>
+                <div class="rating">★ 4.7</div>
+              </div>
+              <p>Kids friendly color game section ekak. Rounded shapes saha bright image style ekka hondai.</p>
+              <div class="meta-row">
+                <div class="meta-chip">Kids</div>
+                <div class="meta-chip">Color</div>
+                <div class="meta-chip">Fun</div>
+              </div>
+              <div class="card-actions">
+                <a class="play-btn" href="#">Play Now</a>
+                <a class="nav-btn" href="#">Details</a>
+              </div>
+            </div>
+          </article>
 
-window.onload=function(){
-let s=getSession();
-if(s) showHome(s);
-}
-</script>
+          <article class="game-card">
+            <div class="game-image" style="background-image:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80');">
+              <div class="badge-live">Top Rated</div>
+            </div>
+            <div class="game-body">
+              <div class="game-title-row">
+                <h3>Neon Racer</h3>
+                <div class="rating">★ 4.9</div>
+              </div>
+              <p>Modern racing card ekak widiyata use karanna puluwan neon look section ekak.</p>
+              <div class="meta-row">
+                <div class="meta-chip">Racing</div>
+                <div class="meta-chip">Neon</div>
+                <div class="meta-chip">Fast</div>
+              </div>
+              <div class="card-actions">
+                <a class="play-btn" href="#">Play Now</a>
+                <a class="nav-btn" href="#">Details</a>
+              </div>
+            </div>
+          </article>
 
+          <article class="game-card">
+            <div class="game-image" style="background-image:url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80');">
+              <div class="badge-live">Strategy</div>
+            </div>
+            <div class="game-body">
+              <div class="game-title-row">
+                <h3>Logic Arena</h3>
+                <div class="rating">★ 4.8</div>
+              </div>
+              <p>Strategy type section walata hoda dark card style ekak. Text readability godak hondai.</p>
+              <div class="meta-row">
+                <div class="meta-chip">Logic</div>
+                <div class="meta-chip">Mind</div>
+                <div class="meta-chip">Strategy</div>
+              </div>
+              <div class="card-actions">
+                <a class="play-btn" href="#">Play Now</a>
+                <a class="nav-btn" href="#">Details</a>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="feature-band">
+          <div class="feature-box">
+            <h3>Animated Cards</h3>
+            <p>Hover karaddi cards float wena widiyata transitions dala tiyenne smooth feeling ekak denna.</p>
+          </div>
+          <div class="feature-box">
+            <h3>Responsive Layout</h3>
+            <p>Desktop saha mobile dekema cards, hero section, buttons hondatama pennanawa.</p>
+          </div>
+          <div class="feature-box">
+            <h3>Readable Sections</h3>
+            <p>User friendly spacing, strong contrast, saha simple navigation nisa use karanna lesi.</p>
+          </div>
+          <div class="feature-box">
+            <h3>Easy to Extend</h3>
+            <p>Dan ඉඳලා real game links, ads sections, leaderboard, category filters add karanna puluwan.</p>
+          </div>
+        </section>
+
+        <section class="cta-banner">
+          <div>
+            <h2>Ready to grow your game platform?</h2>
+            <p>
+              Me template ekata oya real games, ads area, categories, search bar, leaderboard,
+              featured banners, saha login-based profile features add karala loku platform ekak karanna puluwan.
+            </p>
+          </div>
+          <button class="play-btn" onclick="scrollToTopHome()">Back to Top</button>
+        </section>
+
+        <div class="footer">
+          Signed in as <strong id="homeEmail">user@email.com</strong> · GameVerse UI Demo
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="aboutPage" class="pages-wrap">
+    <div class="pages-shell">
+      <div class="page-card">
+        <div class="back-row">
+          <h1>About GameVerse</h1>
+          <button class="nav-btn" onclick="showMainHome()">Back Home</button>
+        </div>
+        <p>
+          Me page eka modern game platform homepage template ekak. User sign up/sign in karala
+          featured games, categories, animations saha player-friendly layout ekak balanna puluwan.
+        </p>
+        <p>
+          Oya meka game hub ekakata, kids site ekakata, mini arcade ekakata, hari project landing page ekakata convert karanna puluwan.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="contactPage" class="pages-wrap">
+    <div class="pages-shell">
+      <div class="page-card">
+        <div class="back-row">
+          <h1>Contact</h1>
+          <button class="nav-btn" onclick="showMainHome()">Back Home</button>
+        </div>
+        <p>Email: your@email.com</p>
+        <p>Instagram: @yourbrand</p>
+        <p>Telegram: @yourchannel</p>
+        <p>Me data oyage real contact details walata replace karanna.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DB_KEY = 'advanced_auth_users_db';
+    const SESSION_KEY = 'advanced_auth_current_user';
+
+    const authWrap = document.getElementById('authWrap');
+    const homeWrap = document.getElementById('homeWrap');
+    const aboutPage = document.getElementById('aboutPage');
+    const contactPage = document.getElementById('contactPage');
+
+    const signupTab = document.getElementById('signupTab');
+    const signinTab = document.getElementById('signinTab');
+    const signupBox = document.getElementById('signupBox');
+    const signinBox = document.getElementById('signinBox');
+
+    const signupForm = document.getElementById('signupForm');
+    const signinForm = document.getElementById('signinForm');
+
+    const signupMessage = document.getElementById('signupMessage');
+    const signinMessage = document.getElementById('signinMessage');
+
+    const signupUsername = document.getElementById('signupUsername');
+    const signupEmail = document.getElementById('signupEmail');
+    const signupPassword = document.getElementById('signupPassword');
+    const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+    const signinEmail = document.getElementById('signinEmail');
+    const signinPassword = document.getElementById('signinPassword');
+
+    const homeUsername = document.getElementById('homeUsername');
+    const homeEmail = document.getElementById('homeEmail');
+    const playerEmailShort = document.getElementById('playerEmailShort');
+
+    const passwordChecks = {
+      length: document.getElementById('checkLength'),
+      upper: document.getElementById('checkUpper'),
+      lower: document.getElementById('checkLower'),
+      number: document.getElementById('checkNumber'),
+      symbol: document.getElementById('checkSymbol')
+    };
+
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem(DB_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(DB_KEY, JSON.stringify(users));
+    }
+
+    function setSession(user) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+
+    function getSession() {
+      try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+      } catch {
+        return null;
+      }
+    }
+
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+    }
+
+    function normalizeEmail(email) {
+      return email.trim().toLowerCase();
+    }
+
+    function normalizeUsername(username) {
+      return username.trim().toLowerCase();
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function checkPasswordStrength(password) {
+      return {
+        length: password.length >= 8,
+        upper: /[A-Z]/.test(password),
+        lower: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        symbol: /[^A-Za-z0-9]/.test(password)
+      };
+    }
+
+    function isStrongPassword(password) {
+      const result = checkPasswordStrength(password);
+      return Object.values(result).every(Boolean);
+    }
+
+    function updatePasswordUI(password) {
+      const result = checkPasswordStrength(password);
+      passwordChecks.length.classList.toggle('ok', result.length);
+      passwordChecks.upper.classList.toggle('ok', result.upper);
+      passwordChecks.lower.classList.toggle('ok', result.lower);
+      passwordChecks.number.classList.toggle('ok', result.number);
+      passwordChecks.symbol.classList.toggle('ok', result.symbol);
+    }
+
+    function showMessage(el, type, text) {
+      el.className = `message show ${type}`;
+      el.textContent = text;
+    }
+
+    function hideMessage(el) {
+      el.className = 'message';
+      el.textContent = '';
+    }
+
+    function showSignup() {
+      signupTab.classList.add('active');
+      signinTab.classList.remove('active');
+      signupBox.classList.add('active');
+      signinBox.classList.remove('active');
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+    }
+
+    function showSignin() {
+      signinTab.classList.add('active');
+      signupTab.classList.remove('active');
+      signinBox.classList.add('active');
+      signupBox.classList.remove('active');
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+    }
+
+    function hideAllPages() {
+      authWrap.classList.add('hidden');
+      homeWrap.classList.remove('active');
+      aboutPage.classList.remove('active');
+      contactPage.classList.remove('active');
+    }
+
+    function showMainHome() {
+      hideAllPages();
+      homeWrap.classList.add('active');
+    }
+
+    function openPage(pageId) {
+      hideAllPages();
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function openAuth() {
+      aboutPage.classList.remove('active');
+      contactPage.classList.remove('active');
+      homeWrap.classList.remove('active');
+      authWrap.classList.remove('hidden');
+    }
+
+    function openHome(user) {
+      hideAllPages();
+      homeWrap.classList.add('active');
+      homeUsername.textContent = user.username;
+      homeEmail.textContent = user.email;
+      playerEmailShort.textContent = user.email.split('@')[0];
+    }
+
+    function scrollToGames() {
+      const target = document.getElementById('gamesSection');
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToTopHome() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    signupTab.addEventListener('click', showSignup);
+    signinTab.addEventListener('click', showSignin);
+    document.getElementById('gotoSignin').addEventListener('click', showSignin);
+    document.getElementById('gotoSignup').addEventListener('click', showSignup);
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      clearSession();
+      openAuth();
+      showSignin();
+    });
+
+    document.getElementById('clearDatabase').addEventListener('click', () => {
+      localStorage.removeItem(DB_KEY);
+      clearSession();
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+      alert('Local database cleared.');
+    });
+
+    document.querySelectorAll('[data-toggle]').forEach(button => {
+      button.addEventListener('click', () => {
+        const input = document.getElementById(button.getAttribute('data-toggle'));
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        button.textContent = isPassword ? 'Hide' : 'Show';
+      });
+    });
+
+    document.querySelectorAll('[data-page]').forEach(button => {
+      button.addEventListener('click', () => openPage(button.getAttribute('data-page')));
+    });
+
+    document.querySelectorAll('[data-page-target]').forEach(button => {
+      button.addEventListener('click', () => {
+        showMainHome();
+        const targetId = button.getAttribute('data-page-target');
+        const target = document.getElementById(targetId);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    signupPassword.addEventListener('input', () => updatePasswordUI(signupPassword.value));
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage(signupMessage);
+
+      const username = signupUsername.value.trim();
+      const email = normalizeEmail(signupEmail.value);
+      const password = signupPassword.value;
+      const confirmPassword = signupConfirmPassword.value;
+      const usernameNormalized = normalizeUsername(username);
+
+      if (!username || !email || !password || !confirmPassword) {
+        showMessage(signupMessage, 'error', 'Please fill all sign-up fields.');
+        return;
+      }
+
+      if (username.length < 3) {
+        showMessage(signupMessage, 'error', 'User name must have at least 3 characters.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showMessage(signupMessage, 'error', 'Please enter a correct email address.');
+        return;
+      }
+
+      if (!isStrongPassword(password)) {
+        showMessage(signupMessage, 'error', 'Password must include uppercase, lowercase, number, symbol, and 8+ characters.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showMessage(signupMessage, 'error', 'Confirm password does not match.');
+        return;
+      }
+
+      const users = getUsers();
+      const emailExists = users.some(user => user.email === email);
+      const usernameExists = users.some(user => normalizeUsername(user.username) === usernameNormalized);
+
+      if (emailExists) {
+        showMessage(signupMessage, 'error', 'This email already has an account. Please sign in.');
+        return;
+      }
+
+      if (usernameExists) {
+        showMessage(signupMessage, 'error', 'This user name is already taken. Choose another one.');
+        return;
+      }
+
+      const newUser = {
+        id: Date.now(),
+        username,
+        email,
+        password
+      };
+
+      users.push(newUser);
+      saveUsers(users);
+      setSession({ id: newUser.id, username: newUser.username, email: newUser.email });
+
+      showMessage(signupMessage, 'success', 'Account created successfully. Redirecting to home page...');
+      signupForm.reset();
+      updatePasswordUI('');
+
+      setTimeout(() => {
+        openHome(newUser);
+      }, 700);
+    });
+
+    signinForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage(signinMessage);
+
+      const email = normalizeEmail(signinEmail.value);
+      const password = signinPassword.value;
+
+      if (!email || !password) {
+        showMessage(signinMessage, 'error', 'Please enter email and password.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showMessage(signinMessage, 'error', 'Please enter a correct email address.');
+        return;
+      }
+
+      const users = getUsers();
+      const foundUser = users.find(user => user.email === email && user.password === password);
+
+      if (!foundUser) {
+        showMessage(signinMessage, 'error', 'Invalid email or password.');
+        return;
+      }
+
+      setSession({ id: foundUser.id, username: foundUser.username, email: foundUser.email });
+      showMessage(signinMessage, 'success', 'Sign in successful. Redirecting to home page...');
+      signinForm.reset();
+
+      setTimeout(() => {
+        openHome(foundUser);
+      }, 500);
+    });
+
+    window.addEventListener('load', () => {
+      updatePasswordUI('');
+      const sessionUser = getSession();
+      if (sessionUser) {
+        openHome(sessionUser);
+      } else {
+        openAuth();
+        showSignup();
+      }
+    });
+  </script>
 </body>
 </html>
