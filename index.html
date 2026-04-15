@@ -1286,136 +1286,192 @@
       ctx.translate(x, y + bounce);
     
       // shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillStyle = 'rgba(0,0,0,0.30)';
       ctx.beginPath();
-      ctx.ellipse(20, player.h + 5, 26 - Math.abs(player.vy) * 0.45, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(24, player.h + 6, 28 - Math.abs(player.vy) * 0.45, 8, 0, 0, Math.PI * 2);
       ctx.fill();
     
-      // scarf trail
-      ctx.strokeStyle = 'rgba(139,92,246,0.32)';
-      ctx.lineWidth = 4;
+      // back scarf tail
+      ctx.strokeStyle = 'rgba(239,68,68,0.30)';
+      ctx.lineWidth = 6;
       ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(20, 22);
-      ctx.lineTo(6, 20 + Math.sin(player.legTime * 1.5) * 4);
-      ctx.lineTo(-10, 24 + Math.cos(player.legTime * 1.2) * 5);
+      ctx.moveTo(28, 20);
+      ctx.lineTo(10, 18 + Math.sin(player.legTime * 1.2) * 4);
+      ctx.lineTo(-10, 24 + Math.cos(player.legTime * 1.1) * 6);
       ctx.stroke();
     
-      ctx.strokeStyle = 'rgba(56,189,248,0.22)';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(239,68,68,0.18)';
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(18, 24);
-      ctx.lineTo(-2, 24 + Math.sin(player.legTime) * 3);
-      ctx.lineTo(-22, 28);
+      ctx.moveTo(28, 20);
+      ctx.lineTo(14, 22 + Math.sin(player.legTime) * 3);
+      ctx.lineTo(-2, 28);
       ctx.stroke();
     
       // body glow
-      const glow = ctx.createRadialGradient(20, 28, 4, 20, 28, 36);
-      glow.addColorStop(0, 'rgba(56,189,248,0.18)');
-      glow.addColorStop(1, 'rgba(56,189,248,0)');
-      ctx.fillStyle = glow;
+      const bodyGlow = ctx.createRadialGradient(24, 30, 5, 24, 30, 38);
+      bodyGlow.addColorStop(0, 'rgba(56,189,248,0.12)');
+      bodyGlow.addColorStop(1, 'rgba(56,189,248,0)');
+      ctx.fillStyle = bodyGlow;
       ctx.beginPath();
-      ctx.arc(20, 28, 36, 0, Math.PI * 2);
+      ctx.arc(24, 30, 38, 0, Math.PI * 2);
       ctx.fill();
     
-      // torso armor
-      const torsoGrad = ctx.createLinearGradient(14, 18, 30, 58);
-      torsoGrad.addColorStop(0, 'rgba(56,189,248,1)');
-      torsoGrad.addColorStop(0.5, 'rgba(37,99,235,0.98)');
-      torsoGrad.addColorStop(1, 'rgba(91,33,182,0.98)');
-      ctx.fillStyle = torsoGrad;
-    
-      ctx.beginPath();
-      ctx.roundRect(12, 22, 18, 24, 7);
-      ctx.fill();
-    
-      // chest light
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.beginPath();
-      ctx.roundRect(17, 30, 8, 4, 3);
-      ctx.fill();
-    
-      // neck
-      ctx.fillStyle = 'rgba(148,163,184,0.9)';
-      ctx.beginPath();
-      ctx.roundRect(17, 18, 8, 6, 3);
-      ctx.fill();
-    
-      // head / helmet
-      const helmetGrad = ctx.createLinearGradient(11, 2, 31, 20);
-      helmetGrad.addColorStop(0, 'rgba(226,232,240,1)');
-      helmetGrad.addColorStop(1, 'rgba(71,85,105,1)');
-      ctx.fillStyle = helmetGrad;
-      ctx.beginPath();
-      ctx.arc(21, 12, 11, 0, Math.PI * 2);
-      ctx.fill();
-    
-      // visor
-      const visorGrad = ctx.createLinearGradient(12, 10, 30, 10);
-      visorGrad.addColorStop(0, 'rgba(34,211,238,0.95)');
-      visorGrad.addColorStop(1, 'rgba(59,130,246,0.9)');
-      ctx.fillStyle = visorGrad;
-      ctx.beginPath();
-      ctx.roundRect(13, 8, 16, 7, 4);
-      ctx.fill();
-    
-      // visor shine
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.beginPath();
-      ctx.roundRect(15, 9, 6, 2, 2);
-      ctx.fill();
-    
-      // arms
+      // rear leg for 3D depth
+      ctx.strokeStyle = 'rgba(30,41,59,0.95)';
+      ctx.lineWidth = 8;
       ctx.lineCap = 'round';
-      ctx.lineWidth = 5;
-    
-      ctx.strokeStyle = 'rgba(99,102,241,0.95)';
       ctx.beginPath();
-      ctx.moveTo(14, 27);
-      ctx.lineTo(5, 34 + armSwing * 7);
+      ctx.moveTo(24, 48);
+      ctx.lineTo(33, 67 - legSwing * 6);
       ctx.stroke();
     
-      ctx.beginPath();
-      ctx.moveTo(28, 27);
-      ctx.lineTo(37, 34 - armSwing * 7);
-      ctx.stroke();
-    
-      // gloves
-      ctx.fillStyle = 'rgba(250,204,21,0.95)';
-      ctx.beginPath();
-      ctx.arc(5, 34 + armSwing * 7, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-    
-      ctx.beginPath();
-      ctx.arc(37, 34 - armSwing * 7, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-    
-      // legs
-      ctx.strokeStyle = 'rgba(56,189,248,0.98)';
-      ctx.lineWidth = 6;
-    
-      ctx.beginPath();
-      ctx.moveTo(17, 44);
-      ctx.lineTo(11, 59 + legSwing * 8);
-      ctx.stroke();
-    
-      ctx.beginPath();
-      ctx.moveTo(25, 44);
-      ctx.lineTo(30, 59 - legSwing * 8);
-      ctx.stroke();
-    
-      // boots
+      // rear foot
       ctx.strokeStyle = 'rgba(15,23,42,0.95)';
-      ctx.lineWidth = 5;
+      ctx.lineWidth = 6;
       ctx.beginPath();
-      ctx.moveTo(9, 61 + legSwing * 8);
-      ctx.lineTo(16, 61 + legSwing * 8);
+      ctx.moveTo(31, 69 - legSwing * 6);
+      ctx.lineTo(40, 69 - legSwing * 6);
       ctx.stroke();
     
+      // rear arm for depth
+      ctx.strokeStyle = 'rgba(30,41,59,0.95)';
+      ctx.lineWidth = 7;
       ctx.beginPath();
-      ctx.moveTo(28, 61 - legSwing * 8);
-      ctx.lineTo(35, 61 - legSwing * 8);
+      ctx.moveTo(22, 29);
+      ctx.lineTo(35, 39 - armSwing * 5);
       ctx.stroke();
+    
+      // torso main
+      const torsoGrad = ctx.createLinearGradient(14, 18, 34, 56);
+      torsoGrad.addColorStop(0, 'rgba(71,85,105,1)');
+      torsoGrad.addColorStop(0.45, 'rgba(15,23,42,1)');
+      torsoGrad.addColorStop(1, 'rgba(2,6,23,1)');
+      ctx.fillStyle = torsoGrad;
+      ctx.beginPath();
+      ctx.roundRect(14, 22, 20, 28, 8);
+      ctx.fill();
+    
+      // torso side highlight
+      ctx.fillStyle = 'rgba(148,163,184,0.14)';
+      ctx.beginPath();
+      ctx.roundRect(16, 24, 5, 24, 5);
+      ctx.fill();
+    
+      // chest armor
+      const chestGrad = ctx.createLinearGradient(18, 26, 30, 42);
+      chestGrad.addColorStop(0, 'rgba(56,189,248,0.35)');
+      chestGrad.addColorStop(1, 'rgba(37,99,235,0.10)');
+      ctx.fillStyle = chestGrad;
+      ctx.beginPath();
+      ctx.roundRect(18, 28, 12, 10, 4);
+      ctx.fill();
+    
+      // waist belt
+      ctx.fillStyle = 'rgba(239,68,68,0.92)';
+      ctx.beginPath();
+      ctx.roundRect(15, 42, 18, 4, 2);
+      ctx.fill();
+    
+      // head
+      const headGrad = ctx.createRadialGradient(24, 12, 3, 24, 12, 14);
+      headGrad.addColorStop(0, 'rgba(71,85,105,1)');
+      headGrad.addColorStop(0.55, 'rgba(15,23,42,1)');
+      headGrad.addColorStop(1, 'rgba(2,6,23,1)');
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.arc(24, 13, 11, 0, Math.PI * 2);
+      ctx.fill();
+    
+      // ninja mask lower
+      ctx.fillStyle = 'rgba(3,7,18,0.95)';
+      ctx.beginPath();
+      ctx.roundRect(15, 13, 18, 8, 4);
+      ctx.fill();
+    
+      // eye visor
+      const eyeGrad = ctx.createLinearGradient(17, 10, 31, 10);
+      eyeGrad.addColorStop(0, 'rgba(34,211,238,0.95)');
+      eyeGrad.addColorStop(1, 'rgba(59,130,246,0.95)');
+      ctx.fillStyle = eyeGrad;
+      ctx.beginPath();
+      ctx.roundRect(17, 9, 14, 4, 2);
+      ctx.fill();
+    
+      // eye shine
+      ctx.fillStyle = 'rgba(255,255,255,0.40)';
+      ctx.beginPath();
+      ctx.roundRect(18, 9.5, 5, 1.4, 1);
+      ctx.fill();
+    
+      // hood top highlight
+      ctx.fillStyle = 'rgba(148,163,184,0.12)';
+      ctx.beginPath();
+      ctx.arc(22, 10, 6, Math.PI * 1.15, Math.PI * 1.95);
+      ctx.fill();
+    
+      // front arm
+      ctx.strokeStyle = 'rgba(51,65,85,1)';
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.moveTo(18, 30);
+      ctx.lineTo(7, 40 + armSwing * 7);
+      ctx.stroke();
+    
+      // front glove
+      ctx.fillStyle = 'rgba(239,68,68,0.95)';
+      ctx.beginPath();
+      ctx.arc(7, 40 + armSwing * 7, 4, 0, Math.PI * 2);
+      ctx.fill();
+    
+      // sword handle on back
+      ctx.strokeStyle = 'rgba(120,53,15,0.95)';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(30, 24);
+      ctx.lineTo(40, 12);
+      ctx.stroke();
+    
+      // sword wrap
+      ctx.strokeStyle = 'rgba(250,204,21,0.85)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(30 + i * 2.2, 23 - i * 2.8);
+        ctx.lineTo(32 + i * 2.2, 21 - i * 2.8);
+        ctx.stroke();
+      }
+    
+      // front leg
+      ctx.strokeStyle = 'rgba(71,85,105,1)';
+      ctx.lineWidth = 9;
+      ctx.beginPath();
+      ctx.moveTo(20, 48);
+      ctx.lineTo(14, 68 + legSwing * 8);
+      ctx.stroke();
+    
+      // front shin highlight
+      ctx.strokeStyle = 'rgba(148,163,184,0.18)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(18, 50);
+      ctx.lineTo(14.5, 66 + legSwing * 8);
+      ctx.stroke();
+    
+      // front foot
+      ctx.strokeStyle = 'rgba(15,23,42,1)';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(11, 70 + legSwing * 8);
+      ctx.lineTo(22, 70 + legSwing * 8);
+      ctx.stroke();
+    
+      // knee armor
+      ctx.fillStyle = 'rgba(56,189,248,0.18)';
+      ctx.beginPath();
+      ctx.arc(14, 59 + legSwing * 4, 3.5, 0, Math.PI * 2);
+      ctx.fill();
     
       ctx.restore();
     }
