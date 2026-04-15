@@ -52,11 +52,7 @@
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.18), transparent 20%),
-        radial-gradient(circle at 80% 15%, rgba(139, 92, 246, 0.18), transparent 22%),
-        radial-gradient(circle at 50% 80%, rgba(34, 197, 94, 0.08), transparent 18%),
-        linear-gradient(135deg, #030712 0%, #081120 35%, #0f172a 70%, #111827 100%);
+      background: #030712;
       overflow-x: hidden;
       position: relative;
     }
@@ -86,151 +82,262 @@
       z-index: 5;
     }
 
-    .auth-bg {
+    .game-bg {
       position: fixed;
       inset: 0;
       overflow: hidden;
       pointer-events: none;
       z-index: 0;
-    }
-
-    .auth-overlay {
-      position: absolute;
-      inset: 0;
       background:
-        radial-gradient(circle at center, rgba(56,189,248,.08), transparent 35%),
-        linear-gradient(to bottom, rgba(2,6,23,.15), rgba(2,6,23,.45));
+        radial-gradient(circle at 50% 18%, rgba(56,189,248,.10), transparent 18%),
+        radial-gradient(circle at 80% 20%, rgba(139,92,246,.10), transparent 16%),
+        linear-gradient(180deg, #020617 0%, #07111f 35%, #0b1730 68%, #050816 100%);
     }
 
-    .grid-lines {
+    .game-layer {
       position: absolute;
       inset: 0;
+    }
+
+    .stars {
       background-image:
-        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.25));
-      animation: gridMove 16s linear infinite;
-      opacity: .28;
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,.85) 1px, transparent 2px),
+        radial-gradient(circle at 18% 62%, rgba(255,255,255,.65) 1px, transparent 2px),
+        radial-gradient(circle at 28% 14%, rgba(255,255,255,.75) 1px, transparent 2px),
+        radial-gradient(circle at 34% 42%, rgba(255,255,255,.55) 1px, transparent 2px),
+        radial-gradient(circle at 48% 18%, rgba(255,255,255,.65) 1px, transparent 2px),
+        radial-gradient(circle at 58% 28%, rgba(255,255,255,.8) 1px, transparent 2px),
+        radial-gradient(circle at 67% 10%, rgba(255,255,255,.6) 1px, transparent 2px),
+        radial-gradient(circle at 76% 34%, rgba(255,255,255,.75) 1px, transparent 2px),
+        radial-gradient(circle at 84% 14%, rgba(255,255,255,.7) 1px, transparent 2px),
+        radial-gradient(circle at 92% 24%, rgba(255,255,255,.6) 1px, transparent 2px);
+      animation: twinkleStars 4s ease-in-out infinite alternate;
+      opacity: .9;
     }
 
-    .scan-line {
+    .mountains {
       position: absolute;
-      left: 0;
-      width: 100%;
-      height: 140px;
-      background: linear-gradient(
-        to bottom,
-        transparent,
-        rgba(56,189,248,.08),
-        rgba(56,189,248,.18),
-        transparent
-      );
-      filter: blur(10px);
-      animation: scanMove 6s linear infinite;
-      opacity: .7;
+      left: -5%;
+      right: -5%;
+      bottom: 0;
+      top: auto;
     }
 
-    .floating-controller,
-    .floating-coin,
-    .floating-cube,
-    .floating-ring {
+    .mountains.back {
+      height: 55%;
+      background: linear-gradient(to top, rgba(11,23,48,.95), rgba(11,23,48,.22));
+      clip-path: polygon(0 100%, 8% 72%, 16% 100%, 27% 58%, 40% 100%, 55% 66%, 67% 100%, 78% 54%, 90% 100%, 100% 72%, 100% 100%);
+      animation: mountainMoveBack 28s linear infinite;
+      opacity: .55;
+    }
+
+    .mountains.front {
+      height: 42%;
+      background: linear-gradient(to top, rgba(8,15,30,.96), rgba(8,15,30,.32));
+      clip-path: polygon(0 100%, 10% 70%, 19% 100%, 30% 63%, 43% 100%, 56% 60%, 68% 100%, 80% 68%, 90% 100%, 100% 74%, 100% 100%);
+      animation: mountainMoveFront 14s linear infinite;
+      opacity: .9;
+    }
+
+    .runner-world {
       position: absolute;
-      opacity: .16;
-      filter: drop-shadow(0 0 18px rgba(56,189,248,.18));
+      inset: 0;
     }
 
-    .floating-controller {
+    .moon-glow {
+      position: absolute;
       width: 220px;
       height: 220px;
-      left: 4%;
-      top: 12%;
-      border: 2px solid rgba(56,189,248,.22);
-      border-radius: 42% 58% 55% 45% / 52% 41% 59% 48%;
-      animation: floatSlow 8s ease-in-out infinite;
+      right: 9%;
+      top: 8%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(56,189,248,.35) 0%, rgba(56,189,248,.18) 35%, rgba(56,189,248,.05) 60%, transparent 72%);
+      filter: blur(8px);
+      animation: pulseMoon 5s ease-in-out infinite;
     }
 
-    .floating-controller::before,
-    .floating-controller::after {
-      content: "";
+    .track {
       position: absolute;
-      border-radius: 50%;
-      background: rgba(56,189,248,.22);
-    }
-
-    .floating-controller::before {
-      width: 18px;
-      height: 18px;
-      left: 58px;
-      top: 92px;
-      box-shadow: 34px 0 0 rgba(56,189,248,.22);
-    }
-
-    .floating-controller::after {
-      width: 52px;
+      left: -10%;
+      bottom: 72px;
+      width: 140%;
       height: 10px;
-      left: 84px;
-      top: 102px;
-      border-radius: 999px;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(56,189,248,.18) 0 24px,
+          rgba(139,92,246,.08) 24px 48px
+        );
+      box-shadow: 0 0 20px rgba(56,189,248,.16);
+      animation: trackMove 1.2s linear infinite;
     }
 
-    .floating-coin {
+    .track-glow {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 64px;
+      height: 36px;
+      background: linear-gradient(to top, rgba(56,189,248,.18), transparent);
+      filter: blur(10px);
+    }
+
+    .runner {
+      position: absolute;
+      left: 18%;
+      bottom: 80px;
       width: 90px;
-      height: 90px;
-      right: 10%;
-      top: 18%;
+      height: 130px;
+      animation: runnerBounce .55s linear infinite;
+    }
+
+    .runner-shadow {
+      position: absolute;
+      bottom: -6px;
+      left: 8px;
+      width: 72px;
+      height: 14px;
       border-radius: 50%;
-      border: 6px solid rgba(251,191,36,.24);
-      box-shadow: inset 0 0 0 8px rgba(251,191,36,.08);
-      animation: floatSlow 6.5s ease-in-out infinite 1s;
+      background: rgba(0,0,0,.35);
+      filter: blur(6px);
+      animation: shadowPulse .55s linear infinite;
     }
 
-    .floating-cube {
-      width: 110px;
-      height: 110px;
-      right: 12%;
-      bottom: 18%;
-      border: 2px solid rgba(139,92,246,.26);
-      transform: rotate(45deg);
-      animation: rotateCube 10s linear infinite;
-    }
-
-    .floating-ring {
-      width: 260px;
-      height: 260px;
-      left: 8%;
-      bottom: 8%;
-      border-radius: 50%;
-      border: 2px dashed rgba(34,197,94,.18);
-      animation: spinRing 18s linear infinite;
-    }
-
-    .particles {
+    .runner-body {
       position: absolute;
       inset: 0;
-      overflow: hidden;
     }
 
-    .particles span {
+    .runner-body span {
       position: absolute;
       display: block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.22);
-      animation: particleUp linear infinite;
+      background: linear-gradient(180deg, rgba(56,189,248,.95), rgba(139,92,246,.92));
+      box-shadow: 0 0 14px rgba(56,189,248,.22);
     }
 
-    .particles span:nth-child(1)  { left: 8%;  animation-duration: 13s; animation-delay: 0s;  top: 100%; }
-    .particles span:nth-child(2)  { left: 16%; animation-duration: 10s; animation-delay: 2s;  top: 100%; width: 4px; height: 4px; }
-    .particles span:nth-child(3)  { left: 24%; animation-duration: 15s; animation-delay: 4s;  top: 100%; }
-    .particles span:nth-child(4)  { left: 35%; animation-duration: 11s; animation-delay: 1s;  top: 100%; width: 5px; height: 5px; }
-    .particles span:nth-child(5)  { left: 48%; animation-duration: 14s; animation-delay: 5s;  top: 100%; }
-    .particles span:nth-child(6)  { left: 58%; animation-duration: 9s;  animation-delay: 2s;  top: 100%; width: 4px; height: 4px; }
-    .particles span:nth-child(7)  { left: 68%; animation-duration: 12s; animation-delay: 0s;  top: 100%; }
-    .particles span:nth-child(8)  { left: 76%; animation-duration: 16s; animation-delay: 3s;  top: 100%; }
-    .particles span:nth-child(9)  { left: 84%; animation-duration: 10s; animation-delay: 6s;  top: 100%; width: 5px; height: 5px; }
-    .particles span:nth-child(10) { left: 92%; animation-duration: 14s; animation-delay: 1s;  top: 100%; }
+    .runner .head {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      top: 4px;
+      left: 34px;
+    }
+
+    .runner .torso {
+      width: 16px;
+      height: 42px;
+      border-radius: 12px;
+      top: 26px;
+      left: 37px;
+    }
+
+    .runner .arm {
+      width: 10px;
+      height: 34px;
+      border-radius: 10px;
+      top: 28px;
+      transform-origin: top center;
+    }
+
+    .runner .arm-left {
+      left: 22px;
+      animation: armLeftRun .55s linear infinite;
+    }
+
+    .runner .arm-right {
+      left: 57px;
+      animation: armRightRun .55s linear infinite;
+    }
+
+    .runner .leg {
+      width: 11px;
+      height: 42px;
+      border-radius: 10px;
+      top: 62px;
+      transform-origin: top center;
+    }
+
+    .runner .leg-left {
+      left: 31px;
+      animation: legLeftRun .55s linear infinite;
+    }
+
+    .runner .leg-right {
+      left: 49px;
+      animation: legRightRun .55s linear infinite;
+    }
+
+    .obstacle {
+      position: absolute;
+      bottom: 80px;
+      width: 32px;
+      height: 54px;
+      border-radius: 8px 8px 4px 4px;
+      background: linear-gradient(180deg, rgba(248,113,113,.95), rgba(239,68,68,.78));
+      box-shadow: 0 0 14px rgba(248,113,113,.22);
+      right: -80px;
+    }
+
+    .obstacle::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      top: -10px;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(251,191,36,.88);
+      box-shadow: 0 0 12px rgba(251,191,36,.28);
+    }
+
+    .obstacle-1 { animation: obstacleMove 4.2s linear infinite; }
+    .obstacle-2 { animation: obstacleMove 4.2s linear infinite 1.4s; }
+    .obstacle-3 { animation: obstacleMove 4.2s linear infinite 2.8s; }
+
+    .coins-row {
+      position: absolute;
+      display: flex;
+      gap: 18px;
+      right: -240px;
+    }
+
+    .coin-row-1 {
+      bottom: 180px;
+      animation: coinRowMove 5s linear infinite;
+    }
+
+    .coin-row-2 {
+      bottom: 230px;
+      animation: coinRowMove 5s linear infinite 2.4s;
+    }
+
+    .coin {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 35%, #fff3a3 0%, #facc15 30%, #eab308 65%, #a16207 100%);
+      box-shadow: 0 0 14px rgba(250,204,21,.35);
+      animation: coinSpin .6s linear infinite, coinFloat .9s ease-in-out infinite alternate;
+    }
+
+    .hud-chip {
+      position: absolute;
+      top: 26px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: #dbeafe;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      backdrop-filter: blur(8px);
+    }
+
+    .chip-1 { left: 24px; }
+    .chip-2 { right: 24px; }
 
     .hero-panel,
     .form-panel,
@@ -353,10 +460,12 @@
       justify-content: center;
       position: relative;
       z-index: 6;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      background:
+        linear-gradient(180deg, rgba(7,12,24,.72), rgba(10,18,35,.58));
       box-shadow:
-        0 25px 60px rgba(0, 0, 0, 0.45),
-        0 0 40px rgba(56,189,248,.08);
+        0 25px 70px rgba(0,0,0,.50),
+        0 0 0 1px rgba(255,255,255,.05),
+        0 0 40px rgba(56,189,248,.12);
     }
 
     .form-panel::before {
@@ -365,7 +474,7 @@
       inset: -1px;
       border-radius: 28px;
       padding: 1px;
-      background: linear-gradient(135deg, rgba(56,189,248,.35), rgba(139,92,246,.25), rgba(34,197,94,.18));
+      background: linear-gradient(135deg, rgba(56,189,248,.35), rgba(139,92,246,.24), rgba(34,197,94,.12));
       -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
@@ -712,45 +821,104 @@
     .modal-image { height: 240px; border-radius: 22px; background-size: cover; background-position: center; border: 1px solid var(--border); }
     .modal-hero h2 { margin: 0 0 10px; font-size: 32px; }
 
-    @keyframes floatOrb { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-14px) translateX(10px); } }
-    @keyframes pulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
-    @keyframes riseIn { from { opacity: 0; transform: translateY(18px);} to { opacity: 1; transform: translateY(0);} }
+    @keyframes floatOrb {
+      0%,100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-14px) translateX(10px); }
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: .45; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @keyframes floatCard {
       0%,100% { transform: perspective(1200px) rotateY(-8deg) rotateX(6deg) translateY(0); }
       50% { transform: perspective(1200px) rotateY(-6deg) rotateX(4deg) translateY(-10px); }
     }
-    @keyframes gridMove {
-      0%   { transform: translateY(0); }
-      100% { transform: translateY(42px); }
+
+    @keyframes twinkleStars {
+      0% { opacity: .55; }
+      100% { opacity: 1; }
     }
-    @keyframes scanMove {
-      0%   { top: -18%; }
-      100% { top: 110%; }
+
+    @keyframes pulseMoon {
+      0%,100% { transform: scale(1); opacity: .75; }
+      50% { transform: scale(1.08); opacity: 1; }
     }
-    @keyframes floatSlow {
-      0%,100% { transform: translateY(0) translateX(0); }
-      50%     { transform: translateY(-18px) translateX(10px); }
+
+    @keyframes mountainMoveBack {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-120px); }
     }
-    @keyframes rotateCube {
-      0%   { transform: rotate(45deg); }
-      100% { transform: rotate(405deg); }
+
+    @keyframes mountainMoveFront {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-220px); }
     }
-    @keyframes spinRing {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+
+    @keyframes trackMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-48px); }
     }
-    @keyframes particleUp {
-      0% {
-        transform: translateY(0) scale(.7);
-        opacity: 0;
-      }
-      10% {
-        opacity: .8;
-      }
-      100% {
-        transform: translateY(-115vh) scale(1.2);
-        opacity: 0;
-      }
+
+    @keyframes runnerBounce {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes shadowPulse {
+      0%,100% { transform: scaleX(1); opacity: .32; }
+      50% { transform: scaleX(.82); opacity: .2; }
+    }
+
+    @keyframes armLeftRun {
+      0% { transform: rotate(42deg); }
+      50% { transform: rotate(-38deg); }
+      100% { transform: rotate(42deg); }
+    }
+
+    @keyframes armRightRun {
+      0% { transform: rotate(-42deg); }
+      50% { transform: rotate(38deg); }
+      100% { transform: rotate(-42deg); }
+    }
+
+    @keyframes legLeftRun {
+      0% { transform: rotate(-32deg); }
+      50% { transform: rotate(36deg); }
+      100% { transform: rotate(-32deg); }
+    }
+
+    @keyframes legRightRun {
+      0% { transform: rotate(34deg); }
+      50% { transform: rotate(-34deg); }
+      100% { transform: rotate(34deg); }
+    }
+
+    @keyframes obstacleMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-140vw); }
+    }
+
+    @keyframes coinRowMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-145vw); }
+    }
+
+    @keyframes coinSpin {
+      0% { transform: scaleX(1); }
+      50% { transform: scaleX(.18); }
+      100% { transform: scaleX(1); }
+    }
+
+    @keyframes coinFloat {
+      0% { margin-top: 0; }
+      100% { margin-top: -10px; }
     }
 
     @media (max-width: 1180px) {
@@ -769,24 +937,69 @@
       .hero-home, .cta-banner, .page-card, .modal-box { padding: 20px; }
       .game-screen { transform: none; }
       .form-panel { width: 100%; }
+
+      .runner {
+        left: 10%;
+        transform: scale(.82);
+        transform-origin: bottom left;
+      }
+
+      .moon-glow {
+        width: 150px;
+        height: 150px;
+      }
+
+      .hud-chip {
+        font-size: 10px;
+        padding: 8px 11px;
+      }
+
+      .obstacle {
+        width: 26px;
+        height: 46px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="authWrap" class="auth-wrap">
-    <div class="auth-bg">
-      <div class="auth-overlay"></div>
-      <div class="grid-lines"></div>
-      <div class="scan-line"></div>
+    <div class="game-bg">
+      <div class="game-layer stars"></div>
+      <div class="game-layer mountains back"></div>
+      <div class="game-layer mountains front"></div>
 
-      <div class="floating-controller"></div>
-      <div class="floating-coin"></div>
-      <div class="floating-cube"></div>
-      <div class="floating-ring"></div>
+      <div class="runner-world">
+        <div class="moon-glow"></div>
 
-      <div class="particles">
-        <span></span><span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span><span></span>
+        <div class="coins-row coin-row-1">
+          <span class="coin"></span><span class="coin"></span><span class="coin"></span><span class="coin"></span>
+        </div>
+
+        <div class="coins-row coin-row-2">
+          <span class="coin"></span><span class="coin"></span><span class="coin"></span>
+        </div>
+
+        <div class="track"></div>
+        <div class="track-glow"></div>
+
+        <div class="runner">
+          <div class="runner-shadow"></div>
+          <div class="runner-body">
+            <span class="head"></span>
+            <span class="torso"></span>
+            <span class="arm arm-left"></span>
+            <span class="arm arm-right"></span>
+            <span class="leg leg-left"></span>
+            <span class="leg leg-right"></span>
+          </div>
+        </div>
+
+        <div class="obstacle obstacle-1"></div>
+        <div class="obstacle obstacle-2"></div>
+        <div class="obstacle obstacle-3"></div>
+
+        <div class="hud-chip chip-1">AUTO PLAY</div>
+        <div class="hud-chip chip-2">LEVEL NIGHT RUN</div>
       </div>
     </div>
 
@@ -808,6 +1021,7 @@
               </div>
               <input id="signupUsername" type="text" placeholder="Choose a user name" autocomplete="username">
             </div>
+
             <div class="field">
               <div class="label-row">
                 <label for="signupEmail">Email</label>
@@ -815,6 +1029,7 @@
               </div>
               <input id="signupEmail" type="email" placeholder="Enter your email" autocomplete="email">
             </div>
+
             <div class="field">
               <div class="label-row">
                 <label for="signupPassword">Password</label>
@@ -824,6 +1039,7 @@
                 <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password">
                 <button class="eye-btn" type="button" data-toggle="signupPassword">Show</button>
               </div>
+
               <div class="password-checks">
                 <div id="checkLength" class="check">At least 8 characters</div>
                 <div id="checkUpper" class="check">1 uppercase letter</div>
@@ -832,6 +1048,7 @@
                 <div id="checkSymbol" class="check">1 symbol</div>
               </div>
             </div>
+
             <div class="field">
               <div class="label-row">
                 <label for="signupConfirmPassword">Confirm Password</label>
@@ -842,8 +1059,10 @@
                 <button class="eye-btn" type="button" data-toggle="signupConfirmPassword">Show</button>
               </div>
             </div>
+
             <button class="action-btn" type="submit">Create Account</button>
           </form>
+
           <div class="switch-text">Already have an account? <span id="gotoSignin" class="switch-link">Or Sign In</span></div>
         </div>
 
@@ -858,6 +1077,7 @@
               </div>
               <input id="signinEmail" type="email" placeholder="Enter your email" autocomplete="email">
             </div>
+
             <div class="field">
               <div class="label-row">
                 <label for="signinPassword">Password</label>
@@ -868,8 +1088,10 @@
                 <button class="eye-btn" type="button" data-toggle="signinPassword">Show</button>
               </div>
             </div>
+
             <button class="action-btn" type="submit">Sign In</button>
           </form>
+
           <div class="switch-text">Need a new account? <span id="gotoSignup" class="switch-link">Go to Sign Up</span></div>
         </div>
       </section>
@@ -883,6 +1105,7 @@
           <div class="brand-logo">🎮</div>
           <div>GameVerse</div>
         </div>
+
         <div class="top-actions">
           <div class="top-pill" id="homeMiniUser">Player</div>
           <button class="nav-btn" data-page-target="heroHome">Home</button>
@@ -905,15 +1128,18 @@
                   <div class="tag">Featured Games</div>
                   <div class="tag">Search & Filters</div>
                 </div>
+
                 <h1>Hello, <span id="homeUsername">Player</span> 👋</h1>
                 <p>
                   Oya sign in wela inne. Me advanced home page eka featured games, dashboard widgets,
                   category filters, favorites, search bar, modal preview, theme switch, saha smooth animations ekka hadala tiyenne.
                 </p>
+
                 <div class="hero-buttons">
                   <button class="play-btn" onclick="scrollToGames()">Explore Games</button>
                   <button class="nav-btn" data-page="aboutPage">About Platform</button>
                 </div>
+
                 <div class="stats">
                   <div class="stat">
                     <h3 id="statGames">6</h3>
@@ -929,11 +1155,16 @@
                   </div>
                 </div>
               </div>
+
               <div class="hero-visual">
                 <div class="orb" style="width:110px;height:110px;background:rgba(56,189,248,.16);top:22px;left:20px;"></div>
                 <div class="orb" style="width:90px;height:90px;background:rgba(139,92,246,.16);bottom:24px;right:24px;animation-delay:1s;"></div>
                 <div class="game-screen">
-                  <div class="screen-header"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+                  <div class="screen-header">
+                    <div class="screen-dot"></div>
+                    <div class="screen-dot"></div>
+                    <div class="screen-dot"></div>
+                  </div>
                   <div class="screen-banner"></div>
                   <div class="screen-info">
                     <div class="screen-chip">Fast arcade feel</div>
@@ -957,6 +1188,7 @@
                 <input id="searchInput" type="text" placeholder="Search games by name or category...">
                 <button class="search-btn" type="button">⌕</button>
               </div>
+
               <select id="categoryFilter">
                 <option value="all">All Categories</option>
                 <option value="Arcade">Arcade</option>
@@ -999,14 +1231,17 @@
                 <h3>Search Experience</h3>
                 <p>Search bar eka use karala game title hari category ekin filter karanna puluwan.</p>
               </div>
+
               <div class="feature-box">
                 <h3>Favorites System</h3>
                 <p>Heart button eka click karama game eka favorites list ekata add / remove karanna puluwan.</p>
               </div>
+
               <div class="feature-box">
                 <h3>Modal Preview</h3>
                 <p>Details button eka click karama game preview window ekak open wenawa.</p>
               </div>
+
               <div class="feature-box">
                 <h3>Theme Switch</h3>
                 <p>Dark/light theme maru karala platform eka user-friendly widiyata use karanna puluwan.</p>
@@ -1020,6 +1255,7 @@
                   <p>News cards saha recent activity blocks walin platform eka active wage pennanawa.</p>
                 </div>
               </div>
+
               <div class="news-item">
                 <div>
                   <strong>New dashboard animation pack added</strong>
@@ -1027,6 +1263,7 @@
                 </div>
                 <div class="tag">Today</div>
               </div>
+
               <div class="news-item">
                 <div>
                   <strong>Favorites system enabled</strong>
@@ -1226,7 +1463,8 @@
     let currentUser = null;
 
     function getUsers() {
-      try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch { return []; }
+      try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; }
+      catch { return []; }
     }
 
     function saveUsers(users) {
@@ -1238,7 +1476,8 @@
     }
 
     function getSession() {
-      try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; }
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+      catch { return null; }
     }
 
     function clearSession() {
@@ -1361,10 +1600,17 @@
     function getFilteredGames() {
       const query = searchInput.value.trim().toLowerCase();
       const category = categoryFilter.value;
+
       return games.filter(game => {
-        const matchesQuery = !query || game.title.toLowerCase().includes(query) || game.category.toLowerCase().includes(query) || game.tag.toLowerCase().includes(query);
+        const matchesQuery =
+          !query ||
+          game.title.toLowerCase().includes(query) ||
+          game.category.toLowerCase().includes(query) ||
+          game.tag.toLowerCase().includes(query);
+
         const matchesCategory = category === 'all' || game.category === category;
         const matchesChip = activeChip === 'all' || game.group === activeChip || game.badge.toLowerCase() === activeChip;
+
         return matchesQuery && matchesCategory && matchesChip;
       });
     }
