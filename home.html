@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameVerse Home</title>
+  <style>
+    :root {
+      --text: #ebf4ff;
+      --muted: #9fb5d6;
+      --border: rgba(255,255,255,.14);
+      --primary: #38bdf8;
+      --secondary: #8b5cf6;
+      --shadow: 0 30px 80px rgba(0,0,0,.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #030712;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 15% 15%, rgba(56,189,248,.10), transparent 18%),
+        radial-gradient(circle at 85% 12%, rgba(139,92,246,.10), transparent 18%),
+        linear-gradient(180deg, #020617 0%, #07111f 42%, #081224 100%);
+    }
+
+    .page-noise {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .06;
+      background-image:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 42px 42px;
+    }
+
+    .home-wrap,
+    .pages-wrap {
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+      display: none;
+    }
+
+    .home-wrap.active,
+    .pages-wrap.active {
+      display: block;
+    }
+
+    .home-shell,
+    .page-card {
+      background: linear-gradient(180deg, rgba(10,18,35,.55), rgba(8,14,28,.74));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .home-shell::before,
+    .page-card::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 28px;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        rgba(56,189,248,.35),
+        rgba(139,92,246,.28),
+        rgba(34,197,94,.18)
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .home-shell {
+      max-width: 1240px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 14px 26px rgba(56,189,248,.22);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .small-chip,
+    .nav-btn,
+    .logout-btn {
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.11);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav-btn,
+    .logout-btn {
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .nav-btn:hover,
+    .logout-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, #fbbf24, #fb7185);
+      color: #08131f;
+      border: 0;
+    }
+
+    .home-content {
+      padding: 26px;
+    }
+
+    .home-hero {
+      padding: 30px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(135deg, rgba(56,189,248,.10), rgba(139,92,246,.08));
+      margin-bottom: 24px;
+    }
+
+    .home-hero h1 {
+      margin: 0 0 10px;
+      font-size: 46px;
+    }
+
+    .home-hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 800px;
+    }
+
+    .home-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .home-card {
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+    }
+
+    .home-card h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .home-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .pages-shell {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .page-card {
+      padding: 30px;
+    }
+
+    .page-card h1 {
+      margin-top: 0;
+      font-size: 36px;
+    }
+
+    .page-card p,
+    .page-card li {
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .back-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 760px) {
+      .home-wrap,
+      .pages-wrap {
+        padding: 14px;
+      }
+
+      .home-hero h1 {
+        font-size: 36px;
+      }
+
+      .home-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar,
+      .home-content,
+      .page-card {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-noise"></div>
+
+  <div id="homeWrap" class="home-wrap active">
+    <div class="home-shell">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-logo">🎮</div>
+          <div>GameVerse</div>
+        </div>
+
+        <div class="top-actions">
+          <div class="small-chip" id="homeMiniUser">Player</div>
+          <button class="nav-btn" data-page="aboutPage">About</button>
+          <button class="nav-btn" data-page="contactPage">Contact</button>
+          <button id="logoutBtn" class="logout-btn">Log Out</button>
+        </div>
+      </div>
+
+      <div class="home-content">
+        <section class="home-hero">
+          <h1>Hello, <span id="homeUsername">Player</span> 👋</h1>
+          <p>
+            Oya sign in wela inne. Me version eke auth page eka `auth.html` eke thiyenawa, home page eka `home.html` eke wenama thiyenawa.
+            Session eka localStorage walin save karanawa.
+          </p>
+        </section>
+
+        <div class="home-cards">
+          <div class="home-card">
+            <h3>Secure Auth</h3>
+            <p>Email validation, username uniqueness check, strong password rules saha sign-up walin passe auto sign-in tiyanawa.</p>
+          </div>
+          <div class="home-card">
+            <h3>Separate Pages</h3>
+            <p>Sign-in / sign-up page eka wenama file ekak. Home page eka wenama file ekak. Project eka clean widiyata manage karanna lesi.</p>
+          </div>
+          <div class="home-card">
+            <h3>Ready to Extend</h3>
+            <p>Me file walata passe real backend API, database, leaderboard, profiles saha real game cards add karanna puluwan.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;color:var(--muted);font-size:14px;">
+          Signed in as <strong id="homeEmail" style="color:var(--text)">user@email.com</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="aboutPage" class="pages-wrap">
+    <div class="pages-shell">
+      <div class="page-card">
+        <div class="back-row">
+          <h1>About GameVerse</h1>
+          <button class="nav-btn" onclick="showMainHome()">Back Home</button>
+        </div>
+        <p>GameVerse kiyannē modern auth template ekak. Me version eke sign-in / sign-up page background eka canvas + JS use karala premium animated game intro ekak widiyata hadala tiyenawa.</p>
+        <ul>
+          <li>Strong password validation</li>
+          <li>Unique username check</li>
+          <li>One account per email</li>
+          <li>Automatic sign-in after successful sign-up</li>
+          <li>Separate auth.html and home.html pages</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="contactPage" class="pages-wrap">
+    <div class="pages-shell">
+      <div class="page-card">
+        <div class="back-row">
+          <h1>Contact</h1>
+          <button class="nav-btn" onclick="showMainHome()">Back Home</button>
+        </div>
+        <p>Email: your@email.com</p>
+        <p>Instagram: @yourbrand</p>
+        <p>Discord: yourserver</p>
+        <p>Telegram: @yourchannel</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SESSION_KEY = 'gameverse_ultra_current_user';
+    const AUTH_PAGE_URL = 'auth.html';
+
+    const homeWrap = document.getElementById('homeWrap');
+    const aboutPage = document.getElementById('aboutPage');
+    const contactPage = document.getElementById('contactPage');
+
+    const homeUsername = document.getElementById('homeUsername');
+    const homeEmail = document.getElementById('homeEmail');
+    const homeMiniUser = document.getElementById('homeMiniUser');
+
+    function getSession() {
+      try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+      } catch {
+        return null;
+      }
+    }
+
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+    }
+
+    function hideAllPages() {
+      homeWrap.classList.remove('active');
+      aboutPage.classList.remove('active');
+      contactPage.classList.remove('active');
+    }
+
+    function showMainHome() {
+      hideAllPages();
+      homeWrap.classList.add('active');
+    }
+
+    window.showMainHome = showMainHome;
+
+    function openPage(pageId) {
+      hideAllPages();
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function openHome(user) {
+      homeUsername.textContent = user.username;
+      homeEmail.textContent = user.email;
+      homeMiniUser.textContent = user.username;
+      showMainHome();
+    }
+
+    document.querySelectorAll('[data-page]').forEach(button => {
+      button.addEventListener('click', () => {
+        openPage(button.getAttribute('data-page'));
+      });
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      clearSession();
+      window.location.href = AUTH_PAGE_URL;
+    });
+
+    window.addEventListener('load', () => {
+      const sessionUser = getSession();
+
+      if (!sessionUser) {
+        window.location.href = AUTH_PAGE_URL;
+        return;
+      }
+
+      openHome(sessionUser);
+    });
+  </script>
+</body>
+</html>
