@@ -79,14 +79,6 @@
       z-index: 2;
     }
 
-    .auth-shell {
-      width: 100%;
-      max-width: 1180px;
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 24px;
-      align-items: stretch;
-    }
 
     .hero-panel,
     .form-panel,
@@ -324,7 +316,7 @@
     }
 
     .form-panel {
-      min-height: 720px;
+      min-height: auto;
       padding: 26px;
       display: flex;
       flex-direction: column;
@@ -724,69 +716,7 @@
 
   <div id="authWrap" class="auth-wrap">
     <div class="auth-shell">
-      <section class="hero-panel">
-        <div class="hero-glow one"></div>
-        <div class="hero-glow two"></div>
-
-        <div class="hero-top">
-          <div class="badge-row">
-            <div class="badge">AUTO PLAY RUNNER</div>
-            <div class="badge">NEON GAME UI</div>
-            <div class="badge">JS CANVAS FX</div>
-          </div>
-
-          <h1 class="hero-title">Sign in to a page that actually feels like a game.</h1>
-
-          <p class="hero-desc">
-            Me version eka simple CSS background ekak nemei. Full screen JS canvas animation ekak run wenawa.
-            Auto-run player, obstacles, coins, parallax city lights, responsive glassmorphism auth panel saha
-            premium game landing page feel ekak tiyenne.
-          </p>
-
-          <div class="hero-actions">
-            <button class="hero-btn" type="button" onclick="showSignup()">Create Account</button>
-            <button class="ghost-btn" type="button" onclick="showSignin()">Sign In</button>
-          </div>
-
-          <div class="stats-row">
-            <div class="stat-chip">Live Animation Engine</div>
-            <div class="stat-chip">Canvas Render Loop</div>
-            <div class="stat-chip">Smooth Auth Flow</div>
-          </div>
-
-          <div class="hero-preview">
-            <div class="preview-card">
-              <h3>Real Motion</h3>
-              <p>Background eka static nemei. JS render frame ekin frame ekata update wela premium game intro scene ekak wage penne.</p>
-            </div>
-            <div class="preview-card">
-              <h3>Game Atmosphere</h3>
-              <p>Stars, skyline, neon track, coins, obstacles, score HUD saha auto player jump effect tiyenne.</p>
-            </div>
-            <div class="preview-card">
-              <h3>Modern Auth</h3>
-              <p>Strong password checks, unique username, correct email validation, auto login after sign-up okkoma athule.</p>
-            </div>
-            <div class="preview-card">
-              <h3>Responsive</h3>
-              <p>Desktop ekedi full cinematic view. Mobile ekedi form eka clear widiyata isarahata enawa.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-bottom-ui">
-          <div class="fake-window-top">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-          </div>
-          <div class="window-line long"></div>
-          <div class="window-line mid"></div>
-          <div class="window-line long"></div>
-          <div class="window-line short"></div>
-        </div>
-      </section>
-
+      
       <section class="form-panel">
         <div class="tabs">
           <button id="signupTab" class="tab-btn active" type="button">Sign Up</button>
@@ -795,7 +725,6 @@
 
         <div id="signupBox" class="form-box active">
           <h2 class="form-title">Create Account</h2>
-          <p class="form-sub">GameVerse platform ekata join wenna. Unique username, valid email saha strong password ekak use karanna.</p>
 
           <div id="signupMessage" class="message"></div>
 
@@ -853,16 +782,10 @@
             Already have an account? <span id="gotoSignin" class="switch-link">Or Sign In</span>
           </div>
 
-          <div class="tiny-meta">
-            <div class="small-chip">JS Animation</div>
-            <div class="small-chip">Advanced UI</div>
-            <div class="small-chip">Smooth Auth</div>
-          </div>
         </div>
 
         <div id="signinBox" class="form-box">
           <h2 class="form-title">Welcome Back</h2>
-          <p class="form-sub">Register wechcha email saha password eka use karala dashboard ekata login wenna.</p>
 
           <div id="signinMessage" class="message"></div>
 
@@ -893,11 +816,6 @@
             Need a new account? <span id="gotoSignup" class="switch-link">Go to Sign Up</span>
           </div>
 
-          <div class="tiny-meta">
-            <div class="small-chip">Realtime Canvas</div>
-            <div class="small-chip">Cinematic Feel</div>
-            <div class="small-chip">Glassmorphism</div>
-          </div>
         </div>
       </section>
     </div>
