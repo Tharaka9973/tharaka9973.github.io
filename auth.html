@@ -1278,69 +1278,145 @@
     function drawPlayer() {
       const x = player.x;
       const y = player.y;
-      const legSwing = Math.sin(player.legTime) * 0.8;
-      const armSwing = Math.sin(player.legTime + Math.PI) * 0.8;
-
+      const legSwing = Math.sin(player.legTime) * 0.95;
+      const armSwing = Math.sin(player.legTime + Math.PI) * 0.9;
+      const bounce = Math.sin(player.legTime * 2) * 1.5;
+    
       ctx.save();
-      ctx.translate(x, y);
-
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.translate(x, y + bounce);
+    
+      // shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
       ctx.beginPath();
-      ctx.ellipse(18, player.h + 4, 24 - Math.abs(player.vy) * 0.4, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(20, player.h + 5, 26 - Math.abs(player.vy) * 0.45, 8, 0, 0, Math.PI * 2);
       ctx.fill();
-
-      ctx.strokeStyle = 'rgba(56,189,248,0.95)';
-      ctx.fillStyle = 'rgba(56,189,248,0.95)';
-      ctx.lineWidth = 5;
+    
+      // scarf trail
+      ctx.strokeStyle = 'rgba(139,92,246,0.32)';
+      ctx.lineWidth = 4;
       ctx.lineCap = 'round';
-
       ctx.beginPath();
-      ctx.moveTo(17, 20);
-      ctx.lineTo(18, 42);
+      ctx.moveTo(20, 22);
+      ctx.lineTo(6, 20 + Math.sin(player.legTime * 1.5) * 4);
+      ctx.lineTo(-10, 24 + Math.cos(player.legTime * 1.2) * 5);
       ctx.stroke();
-
-      const headGlow = ctx.createRadialGradient(18, 10, 2, 18, 10, 16);
-      headGlow.addColorStop(0, 'rgba(210,240,255,0.95)');
-      headGlow.addColorStop(1, 'rgba(56,189,248,0.12)');
-      ctx.fillStyle = headGlow;
+    
+      ctx.strokeStyle = 'rgba(56,189,248,0.22)';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(18, 10, 10, 0, Math.PI * 2);
+      ctx.moveTo(18, 24);
+      ctx.lineTo(-2, 24 + Math.sin(player.legTime) * 3);
+      ctx.lineTo(-22, 28);
+      ctx.stroke();
+    
+      // body glow
+      const glow = ctx.createRadialGradient(20, 28, 4, 20, 28, 36);
+      glow.addColorStop(0, 'rgba(56,189,248,0.18)');
+      glow.addColorStop(1, 'rgba(56,189,248,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(20, 28, 36, 0, Math.PI * 2);
       ctx.fill();
-
-      ctx.fillStyle = 'rgba(210,240,255,0.95)';
+    
+      // torso armor
+      const torsoGrad = ctx.createLinearGradient(14, 18, 30, 58);
+      torsoGrad.addColorStop(0, 'rgba(56,189,248,1)');
+      torsoGrad.addColorStop(0.5, 'rgba(37,99,235,0.98)');
+      torsoGrad.addColorStop(1, 'rgba(91,33,182,0.98)');
+      ctx.fillStyle = torsoGrad;
+    
       ctx.beginPath();
-      ctx.arc(18, 10, 6, 0, Math.PI * 2);
+      ctx.roundRect(12, 22, 18, 24, 7);
       ctx.fill();
-
-      ctx.strokeStyle = 'rgba(139,92,246,0.95)';
+    
+      // chest light
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
       ctx.beginPath();
-      ctx.moveTo(18, 25);
-      ctx.lineTo(5, 25 + armSwing * 10);
-      ctx.stroke();
-
+      ctx.roundRect(17, 30, 8, 4, 3);
+      ctx.fill();
+    
+      // neck
+      ctx.fillStyle = 'rgba(148,163,184,0.9)';
       ctx.beginPath();
-      ctx.moveTo(18, 25);
-      ctx.lineTo(31, 25 - armSwing * 10);
+      ctx.roundRect(17, 18, 8, 6, 3);
+      ctx.fill();
+    
+      // head / helmet
+      const helmetGrad = ctx.createLinearGradient(11, 2, 31, 20);
+      helmetGrad.addColorStop(0, 'rgba(226,232,240,1)');
+      helmetGrad.addColorStop(1, 'rgba(71,85,105,1)');
+      ctx.fillStyle = helmetGrad;
+      ctx.beginPath();
+      ctx.arc(21, 12, 11, 0, Math.PI * 2);
+      ctx.fill();
+    
+      // visor
+      const visorGrad = ctx.createLinearGradient(12, 10, 30, 10);
+      visorGrad.addColorStop(0, 'rgba(34,211,238,0.95)');
+      visorGrad.addColorStop(1, 'rgba(59,130,246,0.9)');
+      ctx.fillStyle = visorGrad;
+      ctx.beginPath();
+      ctx.roundRect(13, 8, 16, 7, 4);
+      ctx.fill();
+    
+      // visor shine
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.beginPath();
+      ctx.roundRect(15, 9, 6, 2, 2);
+      ctx.fill();
+    
+      // arms
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 5;
+    
+      ctx.strokeStyle = 'rgba(99,102,241,0.95)';
+      ctx.beginPath();
+      ctx.moveTo(14, 27);
+      ctx.lineTo(5, 34 + armSwing * 7);
       ctx.stroke();
-
+    
+      ctx.beginPath();
+      ctx.moveTo(28, 27);
+      ctx.lineTo(37, 34 - armSwing * 7);
+      ctx.stroke();
+    
+      // gloves
+      ctx.fillStyle = 'rgba(250,204,21,0.95)';
+      ctx.beginPath();
+      ctx.arc(5, 34 + armSwing * 7, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    
+      ctx.beginPath();
+      ctx.arc(37, 34 - armSwing * 7, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    
+      // legs
       ctx.strokeStyle = 'rgba(56,189,248,0.98)';
+      ctx.lineWidth = 6;
+    
       ctx.beginPath();
-      ctx.moveTo(18, 42);
-      ctx.lineTo(8, 58 + legSwing * 8);
+      ctx.moveTo(17, 44);
+      ctx.lineTo(11, 59 + legSwing * 8);
       ctx.stroke();
-
+    
       ctx.beginPath();
-      ctx.moveTo(18, 42);
-      ctx.lineTo(29, 58 - legSwing * 8);
+      ctx.moveTo(25, 44);
+      ctx.lineTo(30, 59 - legSwing * 8);
       ctx.stroke();
-
-      ctx.strokeStyle = 'rgba(56,189,248,0.18)';
+    
+      // boots
+      ctx.strokeStyle = 'rgba(15,23,42,0.95)';
+      ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.moveTo(0, 30);
-      ctx.lineTo(-18, 26 + Math.sin(player.legTime) * 3);
-      ctx.lineTo(-34, 30);
+      ctx.moveTo(9, 61 + legSwing * 8);
+      ctx.lineTo(16, 61 + legSwing * 8);
       ctx.stroke();
-
+    
+      ctx.beginPath();
+      ctx.moveTo(28, 61 - legSwing * 8);
+      ctx.lineTo(35, 61 - legSwing * 8);
+      ctx.stroke();
+    
       ctx.restore();
     }
 
