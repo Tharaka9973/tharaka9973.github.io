@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameVerse Auth</title>
+  <style>
+    :root {
+      --text: #ebf4ff;
+      --muted: #9fb5d6;
+      --border: rgba(255,255,255,.14);
+      --primary: #38bdf8;
+      --secondary: #8b5cf6;
+      --success: #22c55e;
+      --danger: #f87171;
+      --shadow: 0 30px 80px rgba(0,0,0,.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #030712;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body { position: relative; }
+
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56,189,248,.08), transparent 20%),
+        radial-gradient(circle at 80% 15%, rgba(139,92,246,.08), transparent 18%),
+        linear-gradient(180deg, #020617 0%, #07111f 30%, #09152b 58%, #040814 100%);
+    }
+
+    .page-noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: .08;
+      background-image:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), rgba(0,0,0,.25));
+    }
+
+    .auth-wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .auth-shell {
+      width: 100%;
+      max-width: 1180px;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .hero-panel,
+    .form-panel {
+      background: linear-gradient(180deg, rgba(10,18,35,.55), rgba(8,14,28,.74));
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-panel::before,
+    .form-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 28px;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        rgba(56,189,248,.35),
+        rgba(139,92,246,.28),
+        rgba(34,197,94,.18)
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .hero-panel {
+      min-height: 720px;
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge-row,
+    .stats-row,
+    .hero-actions,
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge,
+    .small-chip,
+    .stat-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .hero-title {
+      margin: 18px 0 14px;
+      font-size: 58px;
+      line-height: 1.02;
+      max-width: 650px;
+      letter-spacing: -.03em;
+    }
+
+    .hero-desc {
+      margin: 0;
+      max-width: 620px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .hero-actions { margin-top: 24px; }
+
+    .hero-btn,
+    .ghost-btn,
+    .action-btn,
+    .tab-btn,
+    .eye-btn {
+      border: 0;
+      cursor: pointer;
+      transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .hero-btn:hover,
+    .ghost-btn:hover,
+    .action-btn:hover,
+    .tab-btn:hover,
+    .eye-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .hero-btn,
+    .action-btn {
+      padding: 15px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 15px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 14px 32px rgba(56,189,248,.22);
+    }
+
+    .ghost-btn {
+      padding: 15px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 15px;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.11);
+    }
+
+    .hero-preview {
+      position: relative;
+      z-index: 2;
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .preview-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      min-height: 130px;
+    }
+
+    .preview-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .preview-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .stats-row { margin-top: 20px; }
+
+    .hero-bottom-ui {
+      position: relative;
+      z-index: 2;
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(135deg, rgba(56,189,248,.08), rgba(139,92,246,.08));
+    }
+
+    .fake-window-top {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.35);
+    }
+
+    .window-line {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.11);
+      margin-bottom: 10px;
+      animation: pulseLine 2s ease-in-out infinite;
+    }
+
+    .window-line.long { width: 88%; }
+    .window-line.mid { width: 62%; }
+    .window-line.short { width: 44%; }
+
+    .hero-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(26px);
+      pointer-events: none;
+      opacity: .7;
+    }
+
+    .hero-glow.one {
+      width: 220px;
+      height: 220px;
+      top: -70px;
+      right: -20px;
+      background: rgba(56,189,248,.15);
+      animation: glowFloat 7s ease-in-out infinite;
+    }
+
+    .hero-glow.two {
+      width: 170px;
+      height: 170px;
+      bottom: 20px;
+      left: -30px;
+      background: rgba(139,92,246,.18);
+      animation: glowFloat 8s ease-in-out infinite 1s;
+    }
+
+    .form-panel {
+      min-height: 720px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tab-btn {
+      padding: 14px;
+      border-radius: 13px;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(56,189,248,.24), rgba(139,92,246,.20));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+    }
+
+    .form-box {
+      display: none;
+      position: relative;
+      z-index: 2;
+    }
+
+    .form-box.active {
+      display: block;
+      animation: formPop .35s ease;
+    }
+
+    .form-title {
+      margin: 8px 0 6px;
+      font-size: 36px;
+      letter-spacing: -.03em;
+    }
+
+    .form-sub {
+      margin: 0 0 22px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .field { margin-bottom: 15px; }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(4,10,24,.62);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    input:focus {
+      border-color: rgba(56,189,248,.75);
+      box-shadow: 0 0 0 4px rgba(56,189,248,.12);
+      background: rgba(4,10,24,.8);
+    }
+
+    .password-wrap { position: relative; }
+
+    .eye-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      color: var(--muted);
+      padding: 0;
+      font-size: 14px;
+    }
+
+    .password-checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .check {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .check.ok {
+      background: rgba(34,197,94,.10);
+      border-color: rgba(34,197,94,.30);
+      color: #ccf8d7;
+    }
+
+    .message {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .message.show { display: block; }
+
+    .message.error {
+      background: rgba(248,113,113,.12);
+      border: 1px solid rgba(248,113,113,.28);
+      color: #fecaca;
+    }
+
+    .message.success {
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.28);
+      color: #c8f7d4;
+    }
+
+    .action-btn {
+      width: 100%;
+      margin-top: 8px;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      color: #08131f;
+    }
+
+    .switch-text {
+      margin-top: 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .switch-link {
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .tiny-meta {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tiny-meta .small-chip {
+      font-size: 12px;
+      padding: 8px 12px;
+    }
+
+    @keyframes pulseLine {
+      0%,100% { opacity: .45; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes glowFloat {
+      0%,100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-12px) translateX(10px); }
+    }
+
+    @keyframes formPop {
+      from { opacity: 0; transform: translateY(12px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 1080px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .hero-panel, .form-panel { min-height: auto; }
+    }
+
+    @media (max-width: 760px) {
+      .auth-wrap { padding: 14px; }
+      .hero-title { font-size: 36px; }
+      .hero-preview, .password-checks { grid-template-columns: 1fr; }
+      .hero-panel, .form-panel { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  <div class="page-noise"></div>
+
+  <div class="auth-wrap">
+    <div class="auth-shell">
+      <section class="hero-panel">
+        <div class="hero-glow one"></div>
+        <div class="hero-glow two"></div>
+
+        <div class="hero-top">
+          <div class="badge-row">
+            <div class="badge">AUTO PLAY RUNNER</div>
+            <div class="badge">NEON GAME UI</div>
+            <div class="badge">JS CANVAS FX</div>
+          </div>
+
+          <h1 class="hero-title">Sign in to a page that actually feels like a game.</h1>
+
+          <p class="hero-desc">
+            Me auth page eke background eka static image ekak nemei. Full screen JS canvas animation ekak run wenawa.
+            Auto-run player, obstacles, coins, parallax city lights saha premium glassmorphism panel ekka hadala tiyenne.
+          </p>
+
+          <div class="hero-actions">
+            <button class="hero-btn" type="button" onclick="showSignup()">Create Account</button>
+            <button class="ghost-btn" type="button" onclick="showSignin()">Sign In</button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-chip">Live Animation Engine</div>
+            <div class="stat-chip">Canvas Render Loop</div>
+            <div class="stat-chip">Smooth Auth Flow</div>
+          </div>
+
+          <div class="hero-preview">
+            <div class="preview-card">
+              <h3>Real Motion</h3>
+              <p>Background eka JS render frame ekin frame ekata update wela premium game intro scene ekak wage penne.</p>
+            </div>
+            <div class="preview-card">
+              <h3>Game Atmosphere</h3>
+              <p>Stars, skyline, neon track, coins, obstacles, score HUD saha auto player jump effect tiyanawa.</p>
+            </div>
+            <div class="preview-card">
+              <h3>Modern Auth</h3>
+              <p>Strong password checks, unique username, correct email validation saha auto login flow ekath athule.</p>
+            </div>
+            <div class="preview-card">
+              <h3>Separate Pages</h3>
+              <p>Me version eke sign-up / sign-in `auth.html` eke, home page eka `home.html` eke wenama hadala tiyenne.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-bottom-ui">
+          <div class="fake-window-top">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <div class="window-line long"></div>
+          <div class="window-line mid"></div>
+          <div class="window-line long"></div>
+          <div class="window-line short"></div>
+        </div>
+      </section>
+
+      <section class="form-panel">
+        <div class="tabs">
+          <button id="signupTab" class="tab-btn active" type="button">Sign Up</button>
+          <button id="signinTab" class="tab-btn" type="button">Sign In</button>
+        </div>
+
+        <div id="signupBox" class="form-box active">
+          <h2 class="form-title">Create Account</h2>
+          <p class="form-sub">GameVerse platform ekata join wenna. Unique username, valid email saha strong password ekak use karanna.</p>
+
+          <div id="signupMessage" class="message"></div>
+
+          <form id="signupForm" novalidate>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupUsername">User Name</label>
+                <span class="field-hint">Must be unique</span>
+              </div>
+              <input id="signupUsername" type="text" placeholder="Choose a user name" autocomplete="username" />
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="signupEmail">Email</label>
+                <span class="field-hint">One account per email</span>
+              </div>
+              <input id="signupEmail" type="email" placeholder="Enter your email" autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="signupPassword">Password</label>
+                <span class="field-hint">Strong password required</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password" />
+                <button class="eye-btn" type="button" data-toggle="signupPassword">Show</button>
+              </div>
+
+              <div class="password-checks">
+                <div id="checkLength" class="check">At least 8 characters</div>
+                <div id="checkUpper" class="check">1 uppercase letter</div>
+                <div id="checkLower" class="check">1 lowercase letter</div>
+                <div id="checkNumber" class="check">1 number</div>
+                <div id="checkSymbol" class="check">1 symbol</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="signupConfirmPassword">Confirm Password</label>
+                <span class="field-hint">Must match password</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signupConfirmPassword" type="password" placeholder="Confirm your password" autocomplete="new-password" />
+                <button class="eye-btn" type="button" data-toggle="signupConfirmPassword">Show</button>
+              </div>
+            </div>
+
+            <button class="action-btn" type="submit">Create Account</button>
+          </form>
+
+          <div class="switch-text">
+            Already have an account? <span id="gotoSignin" class="switch-link">Or Sign In</span>
+          </div>
+
+          <div class="tiny-meta">
+            <div class="small-chip">JS Animation</div>
+            <div class="small-chip">Advanced UI</div>
+            <div class="small-chip">Smooth Auth</div>
+          </div>
+        </div>
+
+        <div id="signinBox" class="form-box">
+          <h2 class="form-title">Welcome Back</h2>
+          <p class="form-sub">Register wechcha email saha password eka use karala dashboard ekata login wenna.</p>
+
+          <div id="signinMessage" class="message"></div>
+
+          <form id="signinForm" novalidate>
+            <div class="field">
+              <div class="label-row">
+                <label for="signinEmail">Email</label>
+                <span class="field-hint">Use registered email</span>
+              </div>
+              <input id="signinEmail" type="email" placeholder="Enter your email" autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="signinPassword">Password</label>
+                <span class="field-hint">Enter your password</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signinPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
+                <button class="eye-btn" type="button" data-toggle="signinPassword">Show</button>
+              </div>
+            </div>
+
+            <button class="action-btn" type="submit">Sign In</button>
+          </form>
+
+          <div class="switch-text">
+            Need a new account? <span id="gotoSignup" class="switch-link">Go to Sign Up</span>
+          </div>
+
+          <div class="tiny-meta">
+            <div class="small-chip">Realtime Canvas</div>
+            <div class="small-chip">Cinematic Feel</div>
+            <div class="small-chip">Glassmorphism</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const DB_KEY = 'gameverse_ultra_users_db';
+    const SESSION_KEY = 'gameverse_ultra_current_user';
+    const HOME_PAGE_URL = 'home.html';
+
+    const signupTab = document.getElementById('signupTab');
+    const signinTab = document.getElementById('signinTab');
+    const signupBox = document.getElementById('signupBox');
+    const signinBox = document.getElementById('signinBox');
+
+    const signupForm = document.getElementById('signupForm');
+    const signinForm = document.getElementById('signinForm');
+    const signupMessage = document.getElementById('signupMessage');
+    const signinMessage = document.getElementById('signinMessage');
+
+    const signupUsername = document.getElementById('signupUsername');
+    const signupEmail = document.getElementById('signupEmail');
+    const signupPassword = document.getElementById('signupPassword');
+    const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+    const signinEmail = document.getElementById('signinEmail');
+    const signinPassword = document.getElementById('signinPassword');
+
+    const passwordChecks = {
+      length: document.getElementById('checkLength'),
+      upper: document.getElementById('checkUpper'),
+      lower: document.getElementById('checkLower'),
+      number: document.getElementById('checkNumber'),
+      symbol: document.getElementById('checkSymbol')
+    };
+
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem(DB_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(DB_KEY, JSON.stringify(users));
+    }
+
+    function setSession(user) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+
+    function getSession() {
+      try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+      } catch {
+        return null;
+      }
+    }
+
+    function normalizeEmail(email) {
+      return email.trim().toLowerCase();
+    }
+
+    function normalizeUsername(username) {
+      return username.trim().toLowerCase();
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function checkPasswordStrength(password) {
+      return {
+        length: password.length >= 8,
+        upper: /[A-Z]/.test(password),
+        lower: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        symbol: /[^A-Za-z0-9]/.test(password)
+      };
+    }
+
+    function isStrongPassword(password) {
+      return Object.values(checkPasswordStrength(password)).every(Boolean);
+    }
+
+    function updatePasswordUI(password) {
+      const result = checkPasswordStrength(password);
+      passwordChecks.length.classList.toggle('ok', result.length);
+      passwordChecks.upper.classList.toggle('ok', result.upper);
+      passwordChecks.lower.classList.toggle('ok', result.lower);
+      passwordChecks.number.classList.toggle('ok', result.number);
+      passwordChecks.symbol.classList.toggle('ok', result.symbol);
+    }
+
+    function showMessage(el, type, text) {
+      el.className = `message show ${type}`;
+      el.textContent = text;
+    }
+
+    function hideMessage(el) {
+      el.className = 'message';
+      el.textContent = '';
+    }
+
+    function showSignup() {
+      signupTab.classList.add('active');
+      signinTab.classList.remove('active');
+      signupBox.classList.add('active');
+      signinBox.classList.remove('active');
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+    }
+
+    function showSignin() {
+      signinTab.classList.add('active');
+      signupTab.classList.remove('active');
+      signinBox.classList.add('active');
+      signupBox.classList.remove('active');
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+    }
+
+    window.showSignup = showSignup;
+    window.showSignin = showSignin;
+
+    signupTab.addEventListener('click', showSignup);
+    signinTab.addEventListener('click', showSignin);
+    document.getElementById('gotoSignin').addEventListener('click', showSignin);
+    document.getElementById('gotoSignup').addEventListener('click', showSignup);
+
+    document.querySelectorAll('[data-toggle]').forEach(button => {
+      button.addEventListener('click', () => {
+        const input = document.getElementById(button.getAttribute('data-toggle'));
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        button.textContent = isPassword ? 'Hide' : 'Show';
+      });
+    });
+
+    signupPassword.addEventListener('input', () => {
+      updatePasswordUI(signupPassword.value);
+    });
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage(signupMessage);
+
+      const username = signupUsername.value.trim();
+      const email = normalizeEmail(signupEmail.value);
+      const password = signupPassword.value;
+      const confirmPassword = signupConfirmPassword.value;
+      const usernameNormalized = normalizeUsername(username);
+
+      if (!username || !email || !password || !confirmPassword) {
+        showMessage(signupMessage, 'error', 'Please fill all sign-up fields.');
+        return;
+      }
+
+      if (username.length < 3) {
+        showMessage(signupMessage, 'error', 'User name must have at least 3 characters.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showMessage(signupMessage, 'error', 'Please enter a correct email address.');
+        return;
+      }
+
+      if (!isStrongPassword(password)) {
+        showMessage(signupMessage, 'error', 'Password must include uppercase, lowercase, number, symbol, and 8+ characters.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showMessage(signupMessage, 'error', 'Confirm password does not match.');
+        return;
+      }
+
+      const users = getUsers();
+      const emailExists = users.some(user => user.email === email);
+      const usernameExists = users.some(user => normalizeUsername(user.username) === usernameNormalized);
+
+      if (emailExists) {
+        showMessage(signupMessage, 'error', 'This email already has an account. Please sign in.');
+        return;
+      }
+
+      if (usernameExists) {
+        showMessage(signupMessage, 'error', 'This user name is already taken. Choose another one.');
+        return;
+      }
+
+      const newUser = {
+        id: Date.now(),
+        username,
+        email,
+        password
+      };
+
+      users.push(newUser);
+      saveUsers(users);
+      setSession({ id: newUser.id, username: newUser.username, email: newUser.email });
+
+      showMessage(signupMessage, 'success', 'Account created successfully. Redirecting to home...');
+      signupForm.reset();
+      updatePasswordUI('');
+
+      setTimeout(() => {
+        window.location.href = HOME_PAGE_URL;
+      }, 650);
+    });
+
+    signinForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage(signinMessage);
+
+      const email = normalizeEmail(signinEmail.value);
+      const password = signinPassword.value;
+
+      if (!email || !password) {
+        showMessage(signinMessage, 'error', 'Please enter email and password.');
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showMessage(signinMessage, 'error', 'Please enter a correct email address.');
+        return;
+      }
+
+      const foundUser = getUsers().find(user => user.email === email && user.password === password);
+
+      if (!foundUser) {
+        showMessage(signinMessage, 'error', 'Invalid email or password.');
+        return;
+      }
+
+      setSession({ id: foundUser.id, username: foundUser.username, email: foundUser.email });
+      showMessage(signinMessage, 'success', 'Sign in successful. Redirecting to home...');
+      signinForm.reset();
+
+      setTimeout(() => {
+        window.location.href = HOME_PAGE_URL;
+      }, 500);
+    });
+
+    window.addEventListener('load', () => {
+      updatePasswordUI('');
+      const sessionUser = getSession();
+
+      if (sessionUser) {
+        window.location.href = HOME_PAGE_URL;
+      } else {
+        showSignup();
+      }
+    });
+
+    // =========================
+    // ULTRA JS CANVAS ANIMATION
+    // =========================
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let cw = 0;
+    let ch = 0;
+    let groundY = 0;
+    let mouseX = 0.5;
+    let mouseY = 0.5;
+    let lastTime = 0;
+    let gameTime = 0;
+
+    const skyline = [];
+    const stars = [];
+    const mountainsBack = [];
+    const mountainsFront = [];
+    const particles = [];
+    const obstacles = [];
+    const coins = [];
+
+    const player = {
+      x: 0,
+      y: 0,
+      w: 34,
+      h: 62,
+      vy: 0,
+      gravity: 0.9,
+      jumpPower: -17,
+      onGround: true,
+      legTime: 0,
+      jumpCooldown: 0
+    };
+
+    let score = 0;
+
+    function resizeCanvas() {
+      cw = canvas.width = window.innerWidth * Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+      ch = canvas.height = window.innerHeight * Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(cw / window.innerWidth, ch / window.innerHeight);
+
+      groundY = window.innerHeight * 0.78;
+      player.x = window.innerWidth * 0.18;
+      if (player.onGround) player.y = groundY - player.h;
+
+      buildScene();
+    }
+
+    function rand(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function buildScene() {
+      skyline.length = 0;
+      stars.length = 0;
+      mountainsBack.length = 0;
+      mountainsFront.length = 0;
+
+      let x = -60;
+      while (x < window.innerWidth + 100) {
+        const w = rand(40, 110);
+        skyline.push({
+          x,
+          y: rand(window.innerHeight * 0.20, window.innerHeight * 0.50),
+          w,
+          h: rand(80, 280),
+          lightRows: Math.floor(rand(4, 12)),
+          cols: Math.floor(rand(2, 5))
+        });
+        x += w + rand(8, 20);
+      }
+
+      for (let i = 0; i < 120; i++) {
+        stars.push({
+          x: rand(0, window.innerWidth),
+          y: rand(0, window.innerHeight * 0.55),
+          r: rand(0.5, 1.8),
+          a: rand(0.2, 1),
+          s: rand(0.2, 1)
+        });
+      }
+
+      let mbx = -100;
+      while (mbx < window.innerWidth + 200) {
+        mountainsBack.push({
+          x: mbx,
+          w: rand(180, 300),
+          h: rand(100, 220)
+        });
+        mbx += rand(140, 220);
+      }
+
+      let mfx = -100;
+      while (mfx < window.innerWidth + 240) {
+        mountainsFront.push({
+          x: mfx,
+          w: rand(160, 260),
+          h: rand(90, 180)
+        });
+        mfx += rand(120, 180);
+      }
+
+      rebuildRunnerObjects();
+    }
+
+    function rebuildRunnerObjects() {
+      obstacles.length = 0;
+      coins.length = 0;
+
+      for (let i = 0; i < 4; i++) {
+        obstacles.push({
+          x: window.innerWidth + i * rand(280, 420),
+          y: groundY - rand(40, 80),
+          w: rand(28, 40),
+          h: rand(42, 80),
+          speed: rand(6.2, 8.5)
+        });
+      }
+
+      for (let i = 0; i < 10; i++) {
+        coins.push({
+          x: window.innerWidth + i * rand(140, 220),
+          y: groundY - rand(120, 220),
+          r: rand(9, 12),
+          speed: rand(5.8, 7.4),
+          pulse: rand(0, Math.PI * 2),
+          taken: false
+        });
+      }
+    }
+
+    function addParticle(x, y, color, size = rand(2, 5), life = rand(18, 34)) {
+      particles.push({
+        x,
+        y,
+        vx: rand(-2.5, 2.5),
+        vy: rand(-3.2, 1.2),
+        size,
+        life,
+        maxLife: life,
+        color
+      });
+    }
+
+    function drawSkyGlow() {
+      const grad = ctx.createRadialGradient(
+        window.innerWidth * (0.25 + (mouseX - 0.5) * 0.12),
+        window.innerHeight * 0.22,
+        20,
+        window.innerWidth * 0.25,
+        window.innerHeight * 0.22,
+        window.innerWidth * 0.5
+      );
+      grad.addColorStop(0, 'rgba(56,189,248,0.16)');
+      grad.addColorStop(0.4, 'rgba(139,92,246,0.08)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+      const moonX = window.innerWidth * 0.78 + (mouseX - 0.5) * 30;
+      const moonY = window.innerHeight * 0.16 + (mouseY - 0.5) * 20;
+      const moonR = 54 + Math.sin(gameTime * 0.002) * 4;
+
+      const moonGlow = ctx.createRadialGradient(moonX, moonY, 10, moonX, moonY, 150);
+      moonGlow.addColorStop(0, 'rgba(56,189,248,0.24)');
+      moonGlow.addColorStop(0.25, 'rgba(56,189,248,0.14)');
+      moonGlow.addColorStop(1, 'rgba(56,189,248,0)');
+      ctx.fillStyle = moonGlow;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 150, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(210,240,255,0.9)';
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawStars() {
+      for (const s of stars) {
+        const alpha = s.a * (0.45 + 0.55 * Math.sin(gameTime * 0.001 * s.s + s.x * 0.01));
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0.08, alpha)})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawMountains() {
+      ctx.save();
+      ctx.translate((mouseX - 0.5) * 20, 0);
+
+      for (const m of mountainsBack) {
+        const x = ((m.x - gameTime * 0.02) % (window.innerWidth + 240)) - 120;
+        ctx.fillStyle = 'rgba(20,30,60,0.7)';
+        ctx.beginPath();
+        ctx.moveTo(x, groundY + 40);
+        ctx.lineTo(x + m.w * 0.25, groundY - m.h * 0.5);
+        ctx.lineTo(x + m.w * 0.55, groundY - m.h);
+        ctx.lineTo(x + m.w, groundY + 40);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate((mouseX - 0.5) * 35, 0);
+
+      for (const m of mountainsFront) {
+        const x = ((m.x - gameTime * 0.045) % (window.innerWidth + 220)) - 110;
+        ctx.fillStyle = 'rgba(10,18,35,0.95)';
+        ctx.beginPath();
+        ctx.moveTo(x, groundY + 52);
+        ctx.lineTo(x + m.w * 0.24, groundY - m.h * 0.42);
+        ctx.lineTo(x + m.w * 0.5, groundY - m.h);
+        ctx.lineTo(x + m.w * 0.78, groundY - m.h * 0.36);
+        ctx.lineTo(x + m.w, groundY + 52);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawSkyline() {
+      ctx.save();
+      ctx.translate((mouseX - 0.5) * 14, 0);
+
+      for (const b of skyline) {
+        const x = ((b.x - gameTime * 0.09) % (window.innerWidth + 180)) - 90;
+        const y = groundY - b.h - 14;
+
+        const grad = ctx.createLinearGradient(x, y, x, y + b.h);
+        grad.addColorStop(0, 'rgba(20,35,68,0.55)');
+        grad.addColorStop(1, 'rgba(8,14,28,0.9)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, b.w, b.h);
+
+        ctx.strokeStyle = 'rgba(56,189,248,0.08)';
+        ctx.strokeRect(x, y, b.w, b.h);
+
+        const padX = 8;
+        const padY = 10;
+        const colGap = (b.w - padX * 2) / b.cols;
+        const rowGap = (b.h - padY * 2) / b.lightRows;
+
+        for (let cy = 0; cy < b.lightRows; cy++) {
+          for (let cx = 0; cx < b.cols; cx++) {
+            if (Math.sin((cx + cy) * 2 + gameTime * 0.002 + b.x * 0.01) > 0.15) {
+              const wx = x + padX + cx * colGap + 3;
+              const wy = y + padY + cy * rowGap;
+              ctx.fillStyle = cy % 3 === 0
+                ? 'rgba(250,204,21,0.7)'
+                : 'rgba(56,189,248,0.65)';
+              ctx.fillRect(wx, wy, Math.max(4, colGap - 8), 5);
+            }
+          }
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function drawGround() {
+      const grad = ctx.createLinearGradient(0, groundY - 10, 0, window.innerHeight);
+      grad.addColorStop(0, 'rgba(56,189,248,0.22)');
+      grad.addColorStop(0.04, 'rgba(56,189,248,0.08)');
+      grad.addColorStop(0.05, 'rgba(5,8,18,0.9)');
+      grad.addColorStop(1, 'rgba(3,5,12,1)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, groundY - 18, window.innerWidth, window.innerHeight - groundY + 18);
+
+      for (let i = -2; i < window.innerWidth / 48 + 4; i++) {
+        const x = ((i * 48) - (gameTime * 0.35 % 48));
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(56,189,248,0.18)' : 'rgba(139,92,246,0.14)';
+        ctx.fillRect(x, groundY - 5, 26, 4);
+      }
+
+      ctx.strokeStyle = 'rgba(56,189,248,0.32)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY);
+      ctx.lineTo(window.innerWidth, groundY);
+      ctx.stroke();
+
+      const glow = ctx.createLinearGradient(0, groundY - 30, 0, groundY + 20);
+      glow.addColorStop(0, 'rgba(56,189,248,0)');
+      glow.addColorStop(1, 'rgba(56,189,248,0.16)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, groundY - 30, window.innerWidth, 30);
+    }
+
+    function updatePlayer() {
+      player.legTime += 0.22;
+      player.jumpCooldown -= 1;
+
+      let nearest = null;
+      let nearestDist = Infinity;
+
+      for (const obs of obstacles) {
+        const dist = obs.x - (player.x + player.w);
+        if (dist > -80 && dist < nearestDist) {
+          nearestDist = dist;
+          nearest = obs;
+        }
+      }
+
+      if (nearest && nearestDist < 120 && nearestDist > 15 && player.onGround && player.jumpCooldown <= 0) {
+        player.vy = player.jumpPower - Math.min(nearest.h * 0.015, 1.5);
+        player.onGround = false;
+        player.jumpCooldown = 28;
+
+        for (let i = 0; i < 10; i++) {
+          addParticle(player.x + 12, groundY - 4, '56,189,248', rand(2, 5), rand(14, 26));
+        }
+      }
+
+      player.vy += player.gravity;
+      player.y += player.vy;
+
+      if (player.y >= groundY - player.h) {
+        if (!player.onGround && player.vy > 2) {
+          for (let i = 0; i < 12; i++) {
+            addParticle(player.x + 16, groundY - 4, '139,92,246', rand(2, 5), rand(14, 28));
+          }
+        }
+        player.y = groundY - player.h;
+        player.vy = 0;
+        player.onGround = true;
+      }
+    }
+
+    function drawPlayer() {
+      const x = player.x;
+      const y = player.y;
+      const legSwing = Math.sin(player.legTime) * 0.8;
+      const armSwing = Math.sin(player.legTime + Math.PI) * 0.8;
+
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(18, player.h + 4, 24 - Math.abs(player.vy) * 0.4, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(56,189,248,0.95)';
+      ctx.fillStyle = 'rgba(56,189,248,0.95)';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+
+      ctx.beginPath();
+      ctx.moveTo(17, 20);
+      ctx.lineTo(18, 42);
+      ctx.stroke();
+
+      const headGlow = ctx.createRadialGradient(18, 10, 2, 18, 10, 16);
+      headGlow.addColorStop(0, 'rgba(210,240,255,0.95)');
+      headGlow.addColorStop(1, 'rgba(56,189,248,0.12)');
+      ctx.fillStyle = headGlow;
+      ctx.beginPath();
+      ctx.arc(18, 10, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(210,240,255,0.95)';
+      ctx.beginPath();
+      ctx.arc(18, 10, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(139,92,246,0.95)';
+      ctx.beginPath();
+      ctx.moveTo(18, 25);
+      ctx.lineTo(5, 25 + armSwing * 10);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(18, 25);
+      ctx.lineTo(31, 25 - armSwing * 10);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(56,189,248,0.98)';
+      ctx.beginPath();
+      ctx.moveTo(18, 42);
+      ctx.lineTo(8, 58 + legSwing * 8);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(18, 42);
+      ctx.lineTo(29, 58 - legSwing * 8);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(56,189,248,0.18)';
+      ctx.beginPath();
+      ctx.moveTo(0, 30);
+      ctx.lineTo(-18, 26 + Math.sin(player.legTime) * 3);
+      ctx.lineTo(-34, 30);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function updateObstacles() {
+      for (const obs of obstacles) {
+        obs.x -= obs.speed;
+
+        if (obs.x + obs.w < -30) {
+          obs.x = window.innerWidth + rand(220, 420);
+          obs.h = rand(42, 80);
+          obs.w = rand(28, 40);
+          obs.y = groundY - obs.h;
+          obs.speed = rand(6.2, 8.5);
+          score += 5;
+        }
+
+        const collide =
+          player.x < obs.x + obs.w &&
+          player.x + player.w > obs.x &&
+          player.y < obs.y + obs.h &&
+          player.y + player.h > obs.y;
+
+        if (collide) {
+          for (let i = 0; i < 14; i++) {
+            addParticle(obs.x + obs.w / 2, obs.y + obs.h / 2, '248,113,113', rand(2, 6), rand(16, 34));
+          }
+          obs.x = window.innerWidth + rand(220, 420);
+          score = Math.max(0, score - 8);
+        }
+      }
+    }
+
+    function drawObstacles() {
+      for (const obs of obstacles) {
+        const grad = ctx.createLinearGradient(obs.x, obs.y, obs.x, obs.y + obs.h);
+        grad.addColorStop(0, 'rgba(251,191,36,0.98)');
+        grad.addColorStop(0.3, 'rgba(248,113,113,0.95)');
+        grad.addColorStop(1, 'rgba(220,38,38,0.85)');
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        ctx.roundRect(obs.x, obs.y, obs.w, obs.h, 8);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255,255,255,0.22)';
+        ctx.fillRect(obs.x + 5, obs.y + 8, obs.w - 10, 4);
+
+        const glow = ctx.createRadialGradient(
+          obs.x + obs.w / 2,
+          obs.y + 10,
+          2,
+          obs.x + obs.w / 2,
+          obs.y + 10,
+          18
+        );
+        glow.addColorStop(0, 'rgba(250,204,21,0.55)');
+        glow.addColorStop(1, 'rgba(250,204,21,0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(obs.x + obs.w / 2, obs.y + 10, 18, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function updateCoins() {
+      for (const coin of coins) {
+        coin.x -= coin.speed;
+        coin.pulse += 0.09;
+
+        if (coin.x + coin.r < -20) {
+          coin.x = window.innerWidth + rand(180, 420);
+          coin.y = groundY - rand(120, 220);
+          coin.speed = rand(5.8, 7.4);
+          coin.taken = false;
+        }
+
+        const cx = coin.x;
+        const cy = coin.y + Math.sin(coin.pulse) * 10;
+        const px = player.x + player.w * 0.5;
+        const py = player.y + player.h * 0.45;
+        const dist = Math.hypot(cx - px, cy - py);
+
+        if (!coin.taken && dist < coin.r + 18) {
+          coin.taken = true;
+          coin.x = window.innerWidth + rand(220, 420);
+          coin.y = groundY - rand(120, 220);
+          score += 3;
+
+          for (let i = 0; i < 12; i++) {
+            addParticle(cx, cy, '250,204,21', rand(2, 5), rand(16, 30));
+          }
+        }
+      }
+    }
+
+    function drawCoins() {
+      for (const coin of coins) {
+        const cx = coin.x;
+        const cy = coin.y + Math.sin(coin.pulse) * 10;
+        const scaleX = 0.35 + 0.65 * Math.abs(Math.sin(coin.pulse * 1.8));
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(scaleX, 1);
+
+        const grad = ctx.createRadialGradient(0, 0, 1, 0, 0, coin.r + 4);
+        grad.addColorStop(0, 'rgba(255,243,163,1)');
+        grad.addColorStop(0.35, 'rgba(250,204,21,1)');
+        grad.addColorStop(1, 'rgba(180,83,9,1)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, coin.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+
+        const glow = ctx.createRadialGradient(cx, cy, 1, cx, cy, coin.r * 2.4);
+        glow.addColorStop(0, 'rgba(250,204,21,0.35)');
+        glow.addColorStop(1, 'rgba(250,204,21,0)');
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(cx, cy, coin.r * 2.4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function updateParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.07;
+        p.life--;
+
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    function drawParticles() {
+      for (const p of particles) {
+        const alpha = p.life / p.maxLife;
+        ctx.fillStyle = `rgba(${p.color},${alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawHUD() {
+      const boxW = 210;
+      const boxH = 74;
+      const x = 24;
+      const y = 24;
+
+      ctx.fillStyle = 'rgba(8,15,30,0.55)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(x, y, boxW, boxH, 18);
+      ctx.fill();
+      ctx.stroke();
+
+      const glow = ctx.createLinearGradient(x, y, x + boxW, y);
+      glow.addColorStop(0, 'rgba(56,189,248,0.35)');
+      glow.addColorStop(1, 'rgba(139,92,246,0.18)');
+      ctx.strokeStyle = glow;
+      ctx.strokeRect(x + 1, y + 1, boxW - 2, boxH - 2);
+
+      ctx.fillStyle = 'rgba(219,234,254,0.9)';
+      ctx.font = '700 12px Arial';
+      ctx.fillText('AUTO PLAY MODE', x + 16, y + 20);
+
+      ctx.font = '700 28px Arial';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(String(score).padStart(4, '0'), x + 16, y + 50);
+
+      ctx.font = '600 12px Arial';
+      ctx.fillStyle = 'rgba(159,181,214,0.9)';
+      ctx.fillText('LEVEL: NIGHT RUN', x + 110, y + 50);
+
+      const bx = window.innerWidth - 224;
+      ctx.fillStyle = 'rgba(8,15,30,0.55)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+      ctx.beginPath();
+      ctx.roundRect(bx, 24, 200, 46, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '700 12px Arial';
+      ctx.fillStyle = 'rgba(219,234,254,0.9)';
+      ctx.fillText('GAMEVERSE AUTH ENGINE', bx + 14, 43);
+      ctx.fillStyle = 'rgba(56,189,248,0.9)';
+      ctx.fillText('CANVAS LIVE', bx + 14, 60);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      drawSkyGlow();
+      drawStars();
+      drawMountains();
+      drawSkyline();
+      drawGround();
+      drawCoins();
+      drawObstacles();
+      drawPlayer();
+      drawParticles();
+      drawHUD();
+    }
+
+    function animate(t = 0) {
+      const dt = t - lastTime;
+      lastTime = t;
+      gameTime += dt;
+
+      updatePlayer();
+      updateObstacles();
+      updateCoins();
+      updateParticles();
+      render();
+
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX / window.innerWidth;
+      mouseY = e.clientY / window.innerHeight;
+    });
+
+    resizeCanvas();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
