@@ -1,739 +1,1430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEXUS • Advanced Auth + Immersive Game Hub</title>
-  <!--  advanced design : glassmorphism + particles + 3d tilt + micro-interactions  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameVerse Advanced Auth Platform</title>
   <style>
+    :root {
+      --bg-1: #050b18;
+      --bg-2: #0f172a;
+      --bg-3: #172554;
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-2: rgba(255, 255, 255, 0.05);
+      --surface-3: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #ebf2ff;
+      --muted: #9fb3d7;
+      --primary: #38bdf8;
+      --secondary: #8b5cf6;
+      --success: #22c55e;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+      --shadow-soft: 0 15px 35px rgba(0, 0, 0, 0.2);
+      --hero-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1400&q=80');
+    }
+
+    body.light-theme {
+      --bg-1: #eef6ff;
+      --bg-2: #dceeff;
+      --bg-3: #c8defa;
+      --surface: rgba(255, 255, 255, 0.72);
+      --surface-2: rgba(255, 255, 255, 0.56);
+      --surface-3: rgba(255, 255, 255, 0.45);
+      --border: rgba(15, 23, 42, 0.08);
+      --text: #0f172a;
+      --muted: #475569;
+      --shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+      --shadow-soft: 0 15px 35px rgba(15, 23, 42, 0.08);
+    }
+
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
 
-    :root {
-      --bg-deep: #030614;
-      --bg-glass: rgba(10, 20, 40, 0.65);
-      --border-glow: rgba(0, 255, 255, 0.25);
-      --accent-cyan: #00f2fe;
-      --accent-purple: #b224ef;
-      --accent-pink: #ff6ec7;
-      --gold: #ffd966;
-      --text-primary: #f0f5ff;
-      --text-soft: #b4c6f0;
-      --card-bg: rgba(18, 30, 55, 0.7);
-      --success: #2eec96;
-      --error: #ff5e7c;
-      --shadow-heavy: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 255, 255, 0.1);
-      --glow-spread: 0 0 18px rgba(0, 242, 254, 0.5);
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
-      background: var(--bg-deep);
+      margin: 0;
       min-height: 100vh;
-      color: var(--text-primary);
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 25%),
+        radial-gradient(circle at top right, rgba(139, 92, 246, 0.14), transparent 20%),
+        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.08), transparent 18%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
       overflow-x: hidden;
-      position: relative;
     }
 
-    /* ---------- animated background particles (advanced) ---------- */
-    #particle-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.9;
+    a {
+      text-decoration: none;
+      color: inherit;
     }
 
-    .auth-wrap, .home-wrap, .pages-wrap {
-      position: relative;
-      z-index: 2;
+    .hidden {
+      display: none !important;
     }
 
-    /* glassmorphism base */
-    .glass-panel, .hero-panel, .form-panel, .home-shell, .page-card, .game-card, .feature-box, .cta-banner {
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
-      background: var(--bg-glass);
-      border: 1px solid rgba(0, 255, 255, 0.2);
-      box-shadow: var(--shadow-heavy);
-    }
-
-    /* ---------- AUTH LAYOUT ---------- */
     .auth-wrap {
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+      display: grid;
+      place-items: center;
+      padding: 24px;
     }
 
     .auth-shell {
-      max-width: 1300px;
       width: 100%;
+      max-width: 1180px;
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 2rem;
-      align-items: stretch;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 24px;
+    }
+
+    .hero-panel,
+    .form-panel,
+    .home-shell,
+    .page-card,
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
     }
 
     .hero-panel {
-      border-radius: 42px;
-      padding: 3rem 2.5rem;
+      padding: 38px;
+      min-height: 760px;
       position: relative;
       overflow: hidden;
-      transition: transform 0.3s ease;
     }
 
-    .hero-panel:hover {
-      transform: scale(1.01);
-    }
-
-    .hero-glow {
+    .glow, .orb {
       position: absolute;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(0,242,254,0.3) 0%, transparent 70%);
-      filter: blur(60px);
-      z-index: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(12px);
+      animation: floatOrb 8s ease-in-out infinite;
     }
 
-    .glow-1 { top: -100px; right: -100px; }
-    .glow-2 { bottom: -120px; left: -80px; background: radial-gradient(circle, rgba(178,36,239,0.25) 0%, transparent 70%); }
+    .glow.one { width: 220px; height: 220px; top: -60px; right: -40px; background: rgba(56,189,248,.15); }
+    .glow.two { width: 160px; height: 160px; left: -30px; bottom: 40px; background: rgba(139,92,246,.18); animation-delay: 1.1s; }
+
+    .tag-row, .filter-row, .meta-row, .top-actions, .hero-actions, .hero-buttons, .trend-row, .quick-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag, .meta-chip, .filter-chip, .trend-chip, .top-pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .hero-panel h1, .hero-home h1 {
+      margin: 16px 0 12px;
+      line-height: 1.04;
+    }
 
     .hero-panel h1 {
-      font-size: 4rem;
-      font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, #fff, #b3e0ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      font-size: 54px;
+      max-width: 600px;
       position: relative;
       z-index: 2;
     }
 
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 2rem;
+    .hero-panel p, .hero-home p, .section-head p, .feature-box p, .page-card p, .page-card li, .widget p, .news-item p, .activity-item p {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .hero-panel p {
+      font-size: 16px;
+      max-width: 580px;
       position: relative;
       z-index: 2;
     }
 
-    .tag {
-      background: rgba(0, 255, 255, 0.08);
-      border: 1px solid rgba(0, 255, 255, 0.25);
-      border-radius: 40px;
-      padding: 0.6rem 1.3rem;
-      font-weight: 500;
-      backdrop-filter: blur(4px);
-      color: #c4e6ff;
-    }
-
-    .hero-cards {
+    .hero-grid {
+      position: relative;
+      z-index: 2;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin: 2rem 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 26px;
+    }
+
+    .mini-feature, .widget, .feature-box, .news-item, .activity-item, .sidebar-card, .leaderboard-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
+    }
+
+    .mini-feature:hover, .widget:hover, .feature-box:hover, .news-item:hover, .activity-item:hover, .sidebar-card:hover, .leaderboard-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-soft);
+      border-color: rgba(56,189,248,.28);
+    }
+
+    .mini-feature { padding: 18px; }
+    .mini-feature h3, .widget h3, .feature-box h3, .sidebar-card h3 { margin: 0 0 8px; font-size: 18px; }
+
+    .auth-preview {
+      margin-top: 28px;
+      background: linear-gradient(135deg, rgba(56,189,248,.08), rgba(139,92,246,.08));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 18px;
       position: relative;
       z-index: 2;
     }
 
-    .mini-feature {
-      background: rgba(255,255,255,0.03);
-      border-radius: 24px;
-      padding: 1.5rem;
-      border: 1px solid rgba(255,255,255,0.08);
-      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-      backdrop-filter: blur(8px);
-    }
-
-    .mini-feature:hover {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 22px rgba(0,242,254,0.15);
-      transform: translateY(-6px);
-      background: rgba(20, 50, 90, 0.3);
-    }
+    .preview-top { display: flex; gap: 8px; margin-bottom: 14px; }
+    .preview-dot { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.35); }
+    .preview-card { background: rgba(255,255,255,.06); border: 1px solid var(--border); border-radius: 18px; padding: 16px; margin-bottom: 12px; }
+    .preview-line { height: 12px; border-radius: 999px; background: rgba(255,255,255,.12); margin-bottom: 10px; animation: pulse 2s ease-in-out infinite; }
+    .preview-line.long { width: 90%; } .preview-line.med { width: 72%; } .preview-line.short { width: 54%; }
 
     .form-panel {
-      border-radius: 42px;
-      padding: 2.5rem;
+      padding: 26px;
+      min-height: 760px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
     .tabs {
-      display: flex;
-      gap: 12px;
-      background: rgba(0,0,0,0.2);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
       padding: 8px;
-      border-radius: 60px;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .tab-btn, .action-btn, .ghost-btn, .nav-btn, .play-btn, .logout-btn, .icon-btn, .theme-btn, .favorite-btn, .modal-close, .search-btn {
+      border: 0;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease, background .2s ease;
+    }
+
+    .tab-btn:hover, .action-btn:hover, .ghost-btn:hover, .nav-btn:hover, .play-btn:hover, .logout-btn:hover, .icon-btn:hover, .theme-btn:hover, .favorite-btn:hover, .modal-close:hover, .search-btn:hover {
+      transform: translateY(-2px);
     }
 
     .tab-btn {
-      flex: 1;
       padding: 14px;
-      border-radius: 40px;
-      border: none;
+      border-radius: 12px;
       background: transparent;
-      color: var(--text-soft);
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.25s;
-      backdrop-filter: blur(5px);
+      color: var(--text);
+      font-size: 15px;
     }
 
     .tab-btn.active {
-      background: linear-gradient(145deg, #00c6ff, #0072ff);
-      color: white;
-      box-shadow: 0 8px 20px rgba(0,114,255,0.4);
+      background: linear-gradient(135deg, rgba(56,189,248,.25), rgba(139,92,246,.2));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
     }
 
     .form-box { display: none; }
     .form-box.active { display: block; }
+    .form-title { margin: 10px 0 6px; font-size: 34px; }
+    .form-subtitle { margin: 0 0 22px; color: var(--muted); }
 
-    .input-field {
-      margin-bottom: 1.5rem;
-    }
+    .field { margin-bottom: 15px; }
+    .label-row { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 8px; }
+    label { font-size: 14px; color: var(--text); }
+    .field-hint { font-size: 12px; color: var(--muted); }
 
-    .input-field label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: #bfd9ff;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    .input-wrapper input {
+    input, select {
       width: 100%;
-      padding: 1rem 1.2rem;
-      background: rgba(0, 10, 25, 0.7);
-      border: 1.5px solid rgba(0, 255, 255, 0.25);
-      border-radius: 28px;
-      font-size: 1rem;
-      color: white;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(3,11,25,.62);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 15px;
       outline: none;
-      transition: all 0.2s;
-      backdrop-filter: blur(5px);
+      transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    .input-wrapper input:focus {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 20px rgba(0,242,254,0.3);
+    body.light-theme input, body.light-theme select {
+      background: rgba(255,255,255,.82);
+      color: var(--text);
+    }
+
+    input:focus, select:focus {
+      border-color: rgba(56,189,248,.75);
+      box-shadow: 0 0 0 4px rgba(56,189,248,.12);
+    }
+
+    .password-wrap, .search-shell { position: relative; }
+    .eye-btn, .search-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 0;
     }
 
     .password-checks {
       display: grid;
-      grid-template-columns: repeat(2,1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .check {
-      font-size: 0.8rem;
-      padding: 6px 12px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid #2a3a55;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
     }
+
     .check.ok {
-      border-color: #2eec96;
-      background: rgba(46,236,150,0.1);
-      color: #b9ffe0;
+      background: rgba(34,197,94,.1);
+      border-color: rgba(34,197,94,.3);
+      color: #cbf6d5;
+    }
+
+    .message { display: none; padding: 14px 16px; border-radius: 16px; margin-bottom: 16px; font-size: 14px; line-height: 1.6; }
+    .message.show { display: block; }
+    .message.error { background: rgba(248,113,113,.12); border: 1px solid rgba(248,113,113,.3); color: #fecaca; }
+    .message.success { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.28); color: #bbf7d0; }
+
+    .action-btn, .ghost-btn, .play-btn, .logout-btn, .nav-btn, .theme-btn {
+      padding: 15px 18px;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
     }
 
     .action-btn {
       width: 100%;
-      padding: 1rem;
-      border: none;
-      border-radius: 40px;
-      background: linear-gradient(145deg, #00f2fe, #4facfe);
-      color: #030614;
-      font-weight: 800;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 10px 30px -5px #0072ff;
-      transition: 0.2s;
-      margin: 1rem 0;
-    }
-    .action-btn:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 30px #00f2fe;
+      background: linear-gradient(135deg, var(--primary), var(--success));
+      color: #08131f;
+      box-shadow: 0 14px 24px rgba(56,189,248,.18);
+      margin-top: 6px;
     }
 
-    .ghost-btn {
-      background: transparent;
-      border: 1.5px solid #4facfe;
-      color: #d6e6ff;
-      padding: 0.8rem;
-      border-radius: 40px;
-      cursor: pointer;
-      font-weight: 600;
-      backdrop-filter: blur(8px);
-      transition: 0.2s;
+    .ghost-btn, .nav-btn, .theme-btn {
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border: 1px solid var(--border);
     }
 
-    /* ---------- HOME (ADVANCED) ---------- */
-    .home-wrap { display: none; padding: 1.5rem; }
-    .home-wrap.active { display: block; }
-    .home-shell {
-      max-width: 1500px;
-      margin: 0 auto;
-      border-radius: 48px;
-      overflow: hidden;
-    }
+    .switch-text { margin-top: 16px; text-align: center; color: var(--muted); font-size: 14px; }
+    .switch-link { color: var(--primary); cursor: pointer; font-weight: 700; }
+
+    .home-wrap, .pages-wrap { display: none; min-height: 100vh; padding: 20px; }
+    .home-wrap.active, .pages-wrap.active { display: block; }
+
+    .home-shell { width: 100%; max-width: 1380px; margin: 0 auto; overflow: hidden; }
 
     .topbar {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 1.2rem 2.5rem;
-      border-bottom: 1px solid rgba(0,255,255,0.2);
-      background: rgba(5, 15, 30, 0.6);
-      backdrop-filter: blur(20px);
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 18px 24px;
+      background: rgba(255,255,255,.04);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
     }
 
-    .brand { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
-    .brand span { background: linear-gradient(45deg, #00f2fe, #b224ef); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-    .nav-btn, .logout-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 0.7rem 1.6rem;
-      border-radius: 40px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      backdrop-filter: blur(5px);
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 22px; }
+    .brand-logo {
+      width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 12px 24px rgba(56,189,248,.18);
     }
-    .nav-btn:hover { background: rgba(0,242,254,0.15); border-color: #00f2fe; }
-    .logout-btn { background: rgba(255,80,120,0.2); border-color: #ff7b9c; }
+
+    .top-actions { align-items: center; }
+    .logout-btn { background: linear-gradient(135deg, #fbbf24, #fb7185); color: #08131f; }
+
+    .home-content { padding: 26px; }
+
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .main-column, .side-column { min-width: 0; }
 
     .hero-home {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 34px;
       display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 2.5rem;
-      padding: 3rem 2.5rem;
-      border-radius: 36px;
-      margin: 1.8rem;
-      background: radial-gradient(circle at 20% 30%, rgba(0,242,254,0.12), transparent 60%);
-      border: 1px solid rgba(255,255,255,0.1);
+      grid-template-columns: 1.05fr .95fr;
+      gap: 20px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(56,189,248,.2), transparent 22%),
+        radial-gradient(circle at 88% 18%, rgba(139,92,246,.18), transparent 20%),
+        linear-gradient(135deg, rgba(7,16,31,.88), rgba(17,24,39,.82));
     }
+
+    body.light-theme .hero-home {
+      background:
+        radial-gradient(circle at 15% 20%, rgba(56,189,248,.18), transparent 22%),
+        radial-gradient(circle at 88% 18%, rgba(139,92,246,.14), transparent 20%),
+        linear-gradient(135deg, rgba(255,255,255,.75), rgba(245,248,255,.68));
+    }
+
+    .hero-home h1 { font-size: 48px; }
+    .hero-home p { font-size: 16px; max-width: 620px; }
+    .top-pill { font-size: 12px; padding: 8px 12px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      animation: riseIn .6s ease both;
+    }
+
+    .stat h3 { margin: 0; font-size: 28px; }
+    .stat p { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+    .hero-visual { display: flex; align-items: center; justify-content: center; position: relative; min-height: 340px; }
+
+    .game-screen {
+      width: 100%; max-width: 430px; border-radius: 28px; padding: 18px;
+      background: rgba(255,255,255,.06); border: 1px solid var(--border);
+      box-shadow: 0 30px 60px rgba(0,0,0,.25);
+      transform: perspective(1200px) rotateY(-8deg) rotateX(6deg);
+      animation: floatCard 5s ease-in-out infinite;
+    }
+
+    .screen-header { display: flex; gap: 8px; margin-bottom: 14px; }
+    .screen-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,.34); }
+
+    .screen-banner {
+      height: 150px; border-radius: 22px; background-size: cover; background-position: center;
+      position: relative; overflow: hidden; background-image: var(--hero-image);
+    }
+
+    .screen-banner::after, .game-image::after {
+      content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(3,8,18,.82), rgba(3,8,18,.08));
+    }
+
+    .screen-info {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px;
+    }
+
+    .screen-chip {
+      padding: 12px; border-radius: 16px; background: rgba(255,255,255,.05); border: 1px solid var(--border); font-size: 13px;
+    }
+
+    .section-head {
+      display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin: 34px 0 18px;
+    }
+
+    .section-head h2 { margin: 0; font-size: 30px; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .search-shell input { padding-right: 46px; }
 
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 2rem;
-      padding: 0 1.8rem 2rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .game-card {
-      border-radius: 34px;
-      overflow: hidden;
-      transition: all 0.35s cubic-bezier(0.2,0.9,0.4,1);
-      transform-style: preserve-3d;
-      transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
-      box-shadow: 0 25px 40px -10px black;
-      border: 1px solid rgba(0,255,255,0.2);
-      cursor: pointer;
+      position: relative; overflow: hidden; border-radius: 24px; border: 1px solid var(--border);
+      background: rgba(255,255,255,.05); transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+      animation: riseIn .7s ease both;
     }
 
-    .game-card:hover {
-      transform: perspective(1200px) rotateX(2deg) rotateY(4deg) translateY(-12px);
-      box-shadow: 0 40px 60px -8px #000, 0 0 35px rgba(0,242,254,0.3);
-      border-color: #4facfe;
+    .game-card:hover { transform: translateY(-8px) scale(1.01); box-shadow: var(--shadow-soft); border-color: rgba(56,189,248,.34); }
+    .game-image { position: relative; height: 210px; background-size: cover; background-position: center; }
+    .badge-live { position: absolute; top: 14px; left: 14px; z-index: 1; padding: 8px 12px; border-radius: 999px; font-size: 12px; background: rgba(34,197,94,.18); border: 1px solid rgba(34,197,94,.28); }
+    .favorite-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 2; width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(3,8,18,.55); color: #fff; border: 1px solid rgba(255,255,255,.15); font-size: 18px;
     }
+    .favorite-btn.active { background: rgba(248,113,113,.18); color: #fecaca; }
 
-    .game-image {
-      height: 220px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .game-image::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(0deg, #030614 0%, transparent 60%);
-    }
+    .game-body { padding: 18px; }
+    .game-title-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 8px; }
+    .game-title-row h3 { margin: 0; font-size: 20px; }
+    .rating { font-size: 13px; color: #fde68a; }
+    .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .play-btn { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 12px 24px rgba(56,189,248,.16); }
+    .card-actions .play-btn, .card-actions .nav-btn { flex: 1; min-width: 120px; text-align: center; }
 
-    .badge-live {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      background: #00f2fe;
-      color: black;
-      font-weight: bold;
-      padding: 6px 18px;
-      border-radius: 30px;
-      z-index: 2;
-      box-shadow: 0 0 20px cyan;
-    }
+    .feature-band, .news-grid, .activity-list { display: grid; gap: 16px; }
+    .feature-band { margin-top: 34px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .feature-box { padding: 20px; }
 
-    .game-body { padding: 1.5rem; }
+    .widget { padding: 18px; }
+    .widget-header { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-bottom: 14px; }
+    .widget-header h3 { margin: 0; font-size: 18px; }
+    .widget-number { font-size: 28px; font-weight: 800; }
 
-    .feature-band {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 1.5rem;
-      margin: 2rem 1.8rem;
-    }
+    .sidebar-stack { display: grid; gap: 16px; position: sticky; top: 90px; }
+    .sidebar-card { padding: 18px; }
 
-    .feature-box {
-      border-radius: 30px;
-      padding: 1.8rem;
-      transition: all 0.3s;
-    }
-
-    .feature-box:hover { background: rgba(0,242,254,0.1); transform: scale(1.02); }
-
-    .cta-banner {
-      margin: 2.5rem 1.8rem;
-      border-radius: 40px;
-      padding: 2.5rem;
+    .leaderboard-item, .activity-item, .news-item {
+      padding: 14px;
       display: flex;
       justify-content: space-between;
-      background: linear-gradient(145deg, rgba(0,242,254,0.1), rgba(178,36,239,0.1));
+      gap: 12px;
+      align-items: center;
     }
 
-    /* ---------- 3D tilt & animations ---------- */
-    @keyframes floatParticle {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-25px); }
-      100% { transform: translateY(0px); }
+    .news-grid { grid-template-columns: 1fr; margin-top: 34px; }
+    .activity-list { margin-top: 18px; }
+
+    .cta-banner {
+      margin-top: 34px; padding: 28px; border-radius: 28px; border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(56,189,248,.12), rgba(139,92,246,.12));
+      display: flex; justify-content: space-between; gap: 18px; align-items: center; flex-wrap: wrap;
+    }
+    .cta-banner h2 { margin: 0 0 10px; font-size: 30px; }
+
+    .footer { margin-top: 34px; text-align: center; color: var(--muted); font-size: 14px; padding: 18px 6px 8px; }
+
+    .pages-shell { max-width: 1120px; margin: 0 auto; }
+    .page-card { padding: 28px; margin-bottom: 20px; }
+    .page-card h1 { margin-top: 0; font-size: 36px; }
+    .back-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(2,6,23,.68); display: none; place-items: center; padding: 20px; z-index: 50;
+    }
+    .modal-overlay.active { display: grid; }
+    .modal-box { width: 100%; max-width: 760px; padding: 24px; position: relative; }
+    .modal-close { position: absolute; right: 18px; top: 18px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.08); color: var(--text); }
+    .modal-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: center; }
+    .modal-image { height: 240px; border-radius: 22px; background-size: cover; background-position: center; border: 1px solid var(--border); }
+    .modal-hero h2 { margin: 0 0 10px; font-size: 32px; }
+
+    @keyframes floatOrb { 0%,100% { transform: translateY(0) translateX(0); } 50% { transform: translateY(-14px) translateX(10px); } }
+    @keyframes pulse { 0%,100% { opacity: .45; } 50% { opacity: 1; } }
+    @keyframes riseIn { from { opacity: 0; transform: translateY(18px);} to { opacity: 1; transform: translateY(0);} }
+    @keyframes floatCard {
+      0%,100% { transform: perspective(1200px) rotateY(-8deg) rotateX(6deg) translateY(0); }
+      50% { transform: perspective(1200px) rotateY(-6deg) rotateX(4deg) translateY(-10px); }
     }
 
-    .stat-number { font-size: 2.8rem; font-weight: 800; background: linear-gradient(145deg,#fff,#a0e9ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    @media (max-width: 1180px) {
+      .dashboard-layout, .hero-home, .auth-shell, .modal-hero { grid-template-columns: 1fr; }
+      .sidebar-stack { position: static; }
+      .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .feature-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
 
-    /* pages */
-    .pages-wrap { display: none; padding: 2rem; }
-    .pages-wrap.active { display: block; }
-    .page-card { border-radius: 40px; padding: 3rem; max-width: 1000px; margin: 2rem auto; }
-
-    /* responsive */
-    @media (max-width: 1000px) {
-      .auth-shell, .hero-home { grid-template-columns: 1fr; }
-      .game-grid { grid-template-columns: repeat(2,1fr); }
-      .feature-band { grid-template-columns: repeat(2,1fr); }
+    @media (max-width: 760px) {
+      .auth-wrap, .home-wrap, .pages-wrap { padding: 14px; }
+      .hero-grid, .password-checks, .stats, .toolbar, .game-grid, .feature-band, .screen-info { grid-template-columns: 1fr; }
+      .hero-panel h1, .hero-home h1 { font-size: 38px; }
+      .hero-panel, .form-panel { min-height: auto; }
+      .home-content, .topbar { padding-left: 16px; padding-right: 16px; }
+      .hero-home, .cta-banner, .page-card, .modal-box { padding: 20px; }
+      .game-screen { transform: none; }
     }
   </style>
 </head>
 <body>
-
-  <!-- ADVANCED BACKGROUND: animated particles (Canvas) -->
-  <canvas id="particle-canvas"></canvas>
-
-  <!-- AUTH SECTION -->
   <div id="authWrap" class="auth-wrap">
     <div class="auth-shell">
-      <div class="hero-panel glass-panel">
-        <div class="hero-glow glow-1"></div>
-        <div class="hero-glow glow-2"></div>
+      <section class="hero-panel">
+        <div class="glow one"></div>
+        <div class="glow two"></div>
         <div class="tag-row">
-          <div class="tag">⚡ Zero-lag Auth</div>
-          <div class="tag">🛡️ Military-grade</div>
-          <div class="tag">🎮 Game Hub 3.0</div>
+          <div class="tag">Advanced UI</div>
+          <div class="tag">Auth + Dashboard</div>
+          <div class="tag">Favorites + Search</div>
         </div>
-        <h1>where security<br>meets next‑gen play</h1>
-        <p style="color: #c2d9ff; font-size: 1.2rem; margin-bottom: 2rem;">Sign up once — unlock immersive dashboard with 3D cards, live stats, and particle universe.</p>
-        <div class="hero-cards">
-          <div class="mini-feature"><h3>✓ unique username</h3><p>no duplicates · realtime check</p></div>
-          <div class="mini-feature"><h3>✓ fortress password</h3><p>8+ chars, upper, lower, digit, symbol</p></div>
-          <div class="mini-feature"><h3>✓ instant session</h3><p>auto-login · encrypted local</p></div>
-          <div class="mini-feature"><h3>✓ animated home</h3><p>glassmorphism + tilt + particles</p></div>
+        <h1>Build an advanced game platform with stylish login.</h1>
+        <p>
+          Me single-file project eka advanced sign-up, sign-in, unique username validation, strong password rules,
+          auto session, search, filter, favorites, modal preview, theme switch, widgets, saha animated dashboard ekak ekka enawa.
+        </p>
+
+        <div class="hero-grid">
+          <div class="mini-feature">
+            <h3>Smart Validation</h3>
+            <p>Correct email check, duplicate username check, duplicate email block, strong password rules.</p>
+          </div>
+          <div class="mini-feature">
+            <h3>Animated Dashboard</h3>
+            <p>Hero section, featured games, widgets, favorites, search, filter, modal preview saha responsive layout.</p>
+          </div>
+          <div class="mini-feature">
+            <h3>User Session</h3>
+            <p>Sign-up unama auto sign-in. Browser refresh unath session eka thiyanawa.</p>
+          </div>
+          <div class="mini-feature">
+            <h3>Easy to Expand</h3>
+            <p>Real games, ads, leaderboard, backend API, database, categories, search engine add karanna puluwan.</p>
+          </div>
         </div>
-      </div>
-      <div class="form-panel glass-panel">
+
+        <div class="auth-preview">
+          <div class="preview-top">
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+            <div class="preview-dot"></div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-line long"></div>
+            <div class="preview-line med"></div>
+            <div class="preview-line short"></div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-line long"></div>
+            <div class="preview-line med"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-panel">
         <div class="tabs">
-          <button class="tab-btn active" id="signupTab">SIGN UP</button>
-          <button class="tab-btn" id="signinTab">SIGN IN</button>
+          <button id="signupTab" class="tab-btn active" type="button">Sign Up</button>
+          <button id="signinTab" class="tab-btn" type="button">Sign In</button>
         </div>
+
         <div id="signupBox" class="form-box active">
-          <div id="signupMessage" class="message" style="margin-bottom: 1rem; padding: 0.8rem; border-radius: 24px;"></div>
-          <form id="signupForm">
-            <div class="input-field"><label>Username (unique)</label><div class="input-wrapper"><input id="signupUsername" placeholder="e.g. nexgen_player" autocomplete="off"></div></div>
-            <div class="input-field"><label>Email</label><div class="input-wrapper"><input id="signupEmail" type="email" placeholder="player@nexus.gg"></div></div>
-            <div class="input-field"><label>Password</label><div class="input-wrapper"><input id="signupPassword" type="password" placeholder="••••••••"></div>
+          <h2 class="form-title">Create Account</h2>
+          <p class="form-subtitle">Stylish player account ekak hadala dashboard ekata yanna.</p>
+          <div id="signupMessage" class="message"></div>
+          <form id="signupForm" novalidate>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupUsername">User Name</label>
+                <span class="field-hint">Must be unique</span>
+              </div>
+              <input id="signupUsername" type="text" placeholder="Choose a user name" autocomplete="username">
+            </div>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupEmail">Email</label>
+                <span class="field-hint">One account per email</span>
+              </div>
+              <input id="signupEmail" type="email" placeholder="Enter your email" autocomplete="email">
+            </div>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupPassword">Password</label>
+                <span class="field-hint">Strong password required</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password">
+                <button class="eye-btn" type="button" data-toggle="signupPassword">Show</button>
+              </div>
               <div class="password-checks">
-                <div id="checkLength" class="check">🔒 8+ chars</div><div id="checkUpper" class="check">🔠 1 upper</div>
-                <div id="checkLower" class="check">🔡 1 lower</div><div id="checkNumber" class="check">🔢 1 digit</div>
-                <div id="checkSymbol" class="check">✨ 1 symbol</div>
+                <div id="checkLength" class="check">At least 8 characters</div>
+                <div id="checkUpper" class="check">1 uppercase letter</div>
+                <div id="checkLower" class="check">1 lowercase letter</div>
+                <div id="checkNumber" class="check">1 number</div>
+                <div id="checkSymbol" class="check">1 symbol</div>
               </div>
             </div>
-            <div class="input-field"><label>Confirm</label><div class="input-wrapper"><input id="signupConfirmPassword" type="password" placeholder="retype password"></div></div>
-            <button type="submit" class="action-btn">Create account →</button>
+            <div class="field">
+              <div class="label-row">
+                <label for="signupConfirmPassword">Confirm Password</label>
+                <span class="field-hint">Must match password</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signupConfirmPassword" type="password" placeholder="Confirm your password" autocomplete="new-password">
+                <button class="eye-btn" type="button" data-toggle="signupConfirmPassword">Show</button>
+              </div>
+            </div>
+            <button class="action-btn" type="submit">Create Account</button>
           </form>
-          <div style="text-align:center; margin-top:1rem;"><span id="gotoSignin" style="color:#00f2fe; cursor:pointer;">Already registered? Sign in</span></div>
+          <div class="switch-text">Already have an account? <span id="gotoSignin" class="switch-link">Or Sign In</span></div>
         </div>
+
         <div id="signinBox" class="form-box">
-          <div id="signinMessage" class="message" style="margin-bottom: 1rem;"></div>
-          <form id="signinForm">
-            <div class="input-field"><label>Email</label><div class="input-wrapper"><input id="signinEmail" type="email"></div></div>
-            <div class="input-field"><label>Password</label><div class="input-wrapper"><input id="signinPassword" type="password"></div></div>
-            <button type="submit" class="action-btn">Sign in →</button>
-            <button type="button" id="clearDatabase" class="ghost-btn" style="margin-top:0.5rem;">🧹 Clear local DB</button>
+          <h2 class="form-title">Welcome Back</h2>
+          <p class="form-subtitle">Email saha password ekka sign in wela dashboard ekata yanna.</p>
+          <div id="signinMessage" class="message"></div>
+          <form id="signinForm" novalidate>
+            <div class="field">
+              <div class="label-row">
+                <label for="signinEmail">Email</label>
+                <span class="field-hint">Use registered email</span>
+              </div>
+              <input id="signinEmail" type="email" placeholder="Enter your email" autocomplete="email">
+            </div>
+            <div class="field">
+              <div class="label-row">
+                <label for="signinPassword">Password</label>
+                <span class="field-hint">Enter your password</span>
+              </div>
+              <div class="password-wrap">
+                <input id="signinPassword" type="password" placeholder="Enter your password" autocomplete="current-password">
+                <button class="eye-btn" type="button" data-toggle="signinPassword">Show</button>
+              </div>
+            </div>
+            <button class="action-btn" type="submit">Sign In</button>
+            <button id="clearDatabase" class="ghost-btn" type="button">Clear Local Database</button>
           </form>
-          <div style="text-align:center; margin-top:1rem;"><span id="gotoSignup" style="color:#00f2fe; cursor:pointer;">Need account? Sign up</span></div>
+          <div class="switch-text">Need a new account? <span id="gotoSignup" class="switch-link">Go to Sign Up</span></div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 
-  <!-- HOME (ADVANCED) -->
   <div id="homeWrap" class="home-wrap">
-    <div class="home-shell glass-panel">
+    <div class="home-shell">
       <div class="topbar">
-        <div class="brand">🎮 <span>NEXUS</span> · realm</div>
-        <div style="display: flex; gap: 10px;">
-          <button class="nav-btn" data-page-target="homeSection">🏠 Home</button>
-          <button class="nav-btn" data-page-target="gamesSection">🕹️ Games</button>
-          <button class="nav-btn" data-page="aboutPage">📄 About</button>
-          <button class="nav-btn" data-page="contactPage">📬 Contact</button>
-          <button id="logoutBtn" class="logout-btn">⏻ Logout</button>
+        <div class="brand">
+          <div class="brand-logo">🎮</div>
+          <div>GameVerse</div>
+        </div>
+        <div class="top-actions">
+          <div class="top-pill" id="homeMiniUser">Player</div>
+          <button class="nav-btn" data-page-target="heroHome">Home</button>
+          <button class="nav-btn" data-page-target="gamesSection">Games</button>
+          <button class="nav-btn" data-page-target="favoritesSection">Favorites</button>
+          <button class="nav-btn" data-page="aboutPage">About</button>
+          <button class="nav-btn" data-page="contactPage">Contact</button>
+          <button id="themeBtn" class="theme-btn">Theme</button>
+          <button id="logoutBtn" class="logout-btn">Log Out</button>
         </div>
       </div>
-      <div id="homeSection">
-        <div class="hero-home">
-          <div>
-            <div class="tag-row"><span class="tag">✨ welcome back</span><span class="tag">🎯 live stats</span></div>
-            <h1 style="font-size:3.5rem; font-weight:800;">Hey, <span id="homeUsername">Player</span></h1>
-            <p style="font-size:1.2rem; opacity:0.9;">Your personalized game universe — with 3D tilt cards, particle canvas & smooth interactions.</p>
-            <div style="display: flex; gap:15px; margin:2rem 0;">
-              <button class="action-btn" style="width:auto; padding:1rem 2.5rem;" onclick="scrollToGames()">🎲 Explore games</button>
-              <button class="nav-btn" data-page="aboutPage">📖 About nexus</button>
+
+      <div class="home-content">
+        <div class="dashboard-layout">
+          <div class="main-column">
+            <section id="heroHome" class="hero-home">
+              <div>
+                <div class="tag-row">
+                  <div class="tag">Dashboard</div>
+                  <div class="tag">Featured Games</div>
+                  <div class="tag">Search & Filters</div>
+                </div>
+                <h1>Hello, <span id="homeUsername">Player</span> 👋</h1>
+                <p>
+                  Oya sign in wela inne. Me advanced home page eka featured games, dashboard widgets,
+                  category filters, favorites, search bar, modal preview, theme switch, saha smooth animations ekka hadala tiyenne.
+                </p>
+                <div class="hero-buttons">
+                  <button class="play-btn" onclick="scrollToGames()">Explore Games</button>
+                  <button class="nav-btn" data-page="aboutPage">About Platform</button>
+                </div>
+                <div class="stats">
+                  <div class="stat">
+                    <h3 id="statGames">6</h3>
+                    <p>Featured games</p>
+                  </div>
+                  <div class="stat">
+                    <h3 id="statFavorites">0</h3>
+                    <p>Favorite games</p>
+                  </div>
+                  <div class="stat">
+                    <h3 id="playerEmailShort">live</h3>
+                    <p>Signed in account</p>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-visual">
+                <div class="orb" style="width:110px;height:110px;background:rgba(56,189,248,.16);top:22px;left:20px;"></div>
+                <div class="orb" style="width:90px;height:90px;background:rgba(139,92,246,.16);bottom:24px;right:24px;animation-delay:1s;"></div>
+                <div class="game-screen">
+                  <div class="screen-header"><div class="screen-dot"></div><div class="screen-dot"></div><div class="screen-dot"></div></div>
+                  <div class="screen-banner"></div>
+                  <div class="screen-info">
+                    <div class="screen-chip">Fast arcade feel</div>
+                    <div class="screen-chip">Modern UI</div>
+                    <div class="screen-chip">Favorites system</div>
+                    <div class="screen-chip">Preview modal</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div class="section-head">
+              <div>
+                <h2>Find Your Next Game</h2>
+                <p>Search කරලා, category select karala, lassana cards walin games balanna.</p>
+              </div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:2rem;">
-              <div class="stat"><span class="stat-number" id="statGames">24</span><p>live titles</p></div>
-              <div class="stat"><span class="stat-number">4.9</span><p>★ rating</p></div>
-              <div class="stat"><span id="playerEmailShort" style="font-weight:600;">player@</span><p>active account</p></div>
+
+            <div class="toolbar">
+              <div class="search-shell">
+                <input id="searchInput" type="text" placeholder="Search games by name or category...">
+                <button class="search-btn" type="button">⌕</button>
+              </div>
+              <select id="categoryFilter">
+                <option value="all">All Categories</option>
+                <option value="Arcade">Arcade</option>
+                <option value="Puzzle">Puzzle</option>
+                <option value="Battle">Battle</option>
+                <option value="Kids">Kids</option>
+                <option value="Racing">Racing</option>
+                <option value="Strategy">Strategy</option>
+              </select>
             </div>
+
+            <div class="filter-row">
+              <button class="filter-chip" data-chip="all">All</button>
+              <button class="filter-chip" data-chip="popular">Popular</button>
+              <button class="filter-chip" data-chip="new">New</button>
+              <button class="filter-chip" data-chip="kids">Kids</button>
+              <button class="filter-chip" data-chip="top">Top Rated</button>
+            </div>
+
+            <div class="section-head" id="gamesSection">
+              <div>
+                <h2>Featured Games</h2>
+                <p>Image cards, ratings, preview modal, favorites system saha action buttons.</p>
+              </div>
+            </div>
+
+            <section id="gameGrid" class="game-grid"></section>
+
+            <div class="section-head" id="favoritesSection">
+              <div>
+                <h2>Your Favorites</h2>
+                <p>Heart karapu games me section eke pennanawa.</p>
+              </div>
+            </div>
+
+            <section id="favoritesGrid" class="game-grid"></section>
+
+            <section class="feature-band">
+              <div class="feature-box">
+                <h3>Search Experience</h3>
+                <p>Search bar eka use karala game title hari category ekin filter karanna puluwan.</p>
+              </div>
+              <div class="feature-box">
+                <h3>Favorites System</h3>
+                <p>Heart button eka click karama game eka favorites list ekata add / remove karanna puluwan.</p>
+              </div>
+              <div class="feature-box">
+                <h3>Modal Preview</h3>
+                <p>Details button eka click karama game preview window ekak open wenawa.</p>
+              </div>
+              <div class="feature-box">
+                <h3>Theme Switch</h3>
+                <p>Dark/light theme maru karala platform eka user-friendly widiyata use karanna puluwan.</p>
+              </div>
+            </section>
+
+            <section class="news-grid">
+              <div class="section-head">
+                <div>
+                  <h2>Platform Updates</h2>
+                  <p>News cards saha recent activity blocks walin platform eka active wage pennanawa.</p>
+                </div>
+              </div>
+              <div class="news-item">
+                <div>
+                  <strong>New dashboard animation pack added</strong>
+                  <p>Hero cards, hover effects, floating elements saha glass UI styling dan active.</p>
+                </div>
+                <div class="tag">Today</div>
+              </div>
+              <div class="news-item">
+                <div>
+                  <strong>Favorites system enabled</strong>
+                  <p>Players la prefer karana games heart karala passe aye balanna puluwan.</p>
+                </div>
+                <div class="tag">Update</div>
+              </div>
+            </section>
+
+            <section class="cta-banner">
+              <div>
+                <h2>Ready to turn this into a real game platform?</h2>
+                <p>Dan meka real game links, leaderboard, login API, ads placements, profiles, backend database ekka loku project ekak karanna puluwan.</p>
+              </div>
+              <button class="play-btn" onclick="scrollToTopHome()">Back to Top</button>
+            </section>
+
+            <div class="footer">Signed in as <strong id="homeEmail">user@email.com</strong> · GameVerse Advanced UI Demo</div>
           </div>
-          <div style="display:flex; align-items:center; justify-content:center;">
-            <div style="background:rgba(0,0,0,0.3); border-radius:40px; padding:1.5rem; border:1px solid cyan; backdrop-filter: blur(12px); transform: rotateY(5deg);">
-              <div style="background:url('https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg?auto=compress&cs=tinysrgb&w=600'); height:180px; width:280px; border-radius:24px; background-size:cover;"></div>
-              <div style="margin-top:12px; display:flex; gap:8px;"><span style="background:#00f2fe; padding:4px 16px; border-radius:30px;">NEO ARCADE</span><span>⚡</span></div>
+
+          <aside class="side-column">
+            <div class="sidebar-stack">
+              <div class="sidebar-card">
+                <div class="widget-header">
+                  <h3>Quick Stats</h3>
+                  <div class="tag">Live</div>
+                </div>
+                <div class="trend-row">
+                  <div class="top-pill">Players: 12.4K</div>
+                  <div class="top-pill">Weekly: +18%</div>
+                </div>
+                <div class="activity-list">
+                  <div class="activity-item"><div><strong>Profile ready</strong><p>Dashboard loaded for <span id="sideUser">player</span></p></div><div>✅</div></div>
+                  <div class="activity-item"><div><strong>Favorites sync</strong><p>Local storage based user preference save wenawa</p></div><div>💾</div></div>
+                </div>
+              </div>
+
+              <div class="sidebar-card">
+                <div class="widget-header">
+                  <h3>Top Players</h3>
+                  <div class="tag">Rank</div>
+                </div>
+                <div class="leaderboard-item"><div><strong>#1 NovaKid</strong><p>Score 9,820</p></div><div>🏆</div></div>
+                <div class="leaderboard-item"><div><strong>#2 FlashFox</strong><p>Score 9,210</p></div><div>🥈</div></div>
+                <div class="leaderboard-item"><div><strong>#3 PixelRay</strong><p>Score 8,970</p></div><div>🥉</div></div>
+              </div>
+
+              <div class="sidebar-card">
+                <div class="widget-header">
+                  <h3>Trending Tags</h3>
+                  <div class="tag">Hot</div>
+                </div>
+                <div class="quick-links">
+                  <div class="trend-chip">Arcade</div>
+                  <div class="trend-chip">Puzzle</div>
+                  <div class="trend-chip">Action</div>
+                  <div class="trend-chip">Kids</div>
+                  <div class="trend-chip">Battle</div>
+                  <div class="trend-chip">Racing</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div id="gamesSection" style="padding:1rem 1.8rem;"><h2 style="font-size:2.5rem;">✨ trending games · tilt to feel</h2></div>
-        <div class="game-grid" id="gameGridContainer">
-          <!-- cards will be injected via js for advanced tilt, but static for demo -->
-        </div>
-        <div class="feature-band">
-          <div class="feature-box"><h3>🌀 3D tilt</h3><p>Cards react to mouse — immersive.</p></div>
-          <div class="feature-box"><h3>🌌 particle bg</h3><p>Dynamic canvas network.</p></div>
-          <div class="feature-box"><h3>🔮 glass layers</h3><p>depth & blur effects.</p></div>
-          <div class="feature-box"><h3>⚡ micro-animations</h3><p>hover, count-up, glow.</p></div>
-        </div>
-        <div class="cta-banner">
-          <div><h2 style="font-size:2.2rem;">ready to dominate?</h2><p>Next-gen UI · advanced auth · infinite customization</p></div>
-          <button class="action-btn" style="width:auto;" onclick="window.scrollTo({top:0,behavior:'smooth'});">↑ back to top</button>
+          </aside>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PAGES -->
-  <div id="aboutPage" class="pages-wrap"><div class="page-card"><h1>About NEXUS</h1><p>Advanced auth + game platform. Built with glassmorphism, tilt, and particles. </p><button class="nav-btn" onclick="showMainHome()">← back</button></div></div>
-  <div id="contactPage" class="pages-wrap"><div class="page-card"><h1>Contact</h1><p>nexus@support.game · discord.gg/nexus</p><button class="nav-btn" onclick="showMainHome()">← back</button></div></div>
+  <div id="aboutPage" class="pages-wrap">
+    <div class="pages-shell">
+      <div class="page-card">
+        <div class="back-row">
+          <h1>About GameVerse</h1>
+          <button class="nav-btn" onclick="showMainHome()">Back Home</button>
+        </div>
+        <p>GameVerse kiyannē modern auth + dashboard + mini game platform template ekak. Sign-up, sign-in, session handling, search, category filters, favorites, modal preview, widgets saha animated homepage ekak meke thiyenawa.</p>
+        <p>Oya me template eka game hub ekak, kids platform ekak, mini browser arcade ekak, landing page ekak, hari portfolio project ekak widiyata use karanna puluwan.</p>
+        <ul>
+          <li>Strong password and email validation</li>
+          <li>Unique username and one-account-per-email rules</li>
+          <li>Responsive glassmorphism design</li>
+          <li>Favorites and theme preference save via localStorage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="contactPage" class="pages-wrap">
+    <div class="pages-shell">
+      <div class="page-card">
+        <div class="back-row">
+          <h1>Contact</h1>
+          <button class="nav-btn" onclick="showMainHome()">Back Home</button>
+        </div>
+        <p>Email: your@email.com</p>
+        <p>Instagram: @yourbrand</p>
+        <p>Telegram: @yourchannel</p>
+        <p>Discord: yourserver</p>
+        <p>Me contact info oyage real details walata replace karanna.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameModal" class="modal-overlay">
+    <div class="modal-box">
+      <button id="closeModal" class="modal-close">✕</button>
+      <div class="modal-hero">
+        <div id="modalImage" class="modal-image"></div>
+        <div>
+          <div class="tag-row"><div id="modalBadge" class="tag">Popular</div><div id="modalCategory" class="tag">Arcade</div></div>
+          <h2 id="modalTitle">Game Title</h2>
+          <p id="modalDescription">Game description</p>
+          <div class="meta-row">
+            <div id="modalRating" class="meta-chip">★ 4.8</div>
+            <div id="modalMode" class="meta-chip">1 Player</div>
+            <div id="modalTag" class="meta-chip">Action</div>
+          </div>
+          <div class="hero-actions">
+            <button class="play-btn">Launch Game</button>
+            <button class="nav-btn" onclick="closeGameModal()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    (function(){
-      "use strict";
+    const DB_KEY = 'gameverse_advanced_users_db';
+    const SESSION_KEY = 'gameverse_advanced_current_user';
+    const FAVORITES_KEY = 'gameverse_user_favorites';
+    const THEME_KEY = 'gameverse_theme';
 
-      // ---------- ADVANCED BACKGROUND PARTICLES ----------
-      const canvas = document.getElementById('particle-canvas');
-      const ctx = canvas.getContext('2d');
-      let width, height;
-      let particles = [];
-      function initParticles() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width; canvas.height = height;
-        particles = [];
-        for(let i=0; i<80; i++) {
-          particles.push({
-            x: Math.random()*width, y: Math.random()*height,
-            vx: (Math.random()-0.5)*0.4, vy: (Math.random()-0.5)*0.4,
-            radius: Math.random()*2.5+1,
-            color: `rgba(0, 242, 254, ${Math.random()*0.5+0.2})`
-          });
-        }
+    const games = [
+      { id: 1, title: 'Speed Runner', badge: 'Popular', rating: '★ 4.9', category: 'Arcade', mode: '1 Player', tag: 'Action', group: 'popular', description: 'Fast endless runner style card ekak. Bright visuals saha clear call-to-action buttons.', image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80' },
+      { id: 2, title: 'Puzzle Clash', badge: 'New', rating: '★ 4.8', category: 'Puzzle', mode: 'Brain', tag: 'Relax', group: 'new', description: 'Colorful puzzle section ekak widiyata use karanna hoda card design with clean spacing.', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80' },
+      { id: 3, title: 'Sky Battle', badge: 'Hot', rating: '★ 5.0', category: 'Battle', mode: 'Shooter', tag: '3D Feel', group: 'top', description: 'Animated action section ekak pennanna hoda image card ekak. Hover effect lassanai.', image: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&w=1200&q=80' },
+      { id: 4, title: 'Color Match', badge: 'Kids', rating: '★ 4.7', category: 'Kids', mode: 'Fun', tag: 'Color', group: 'kids', description: 'Kids friendly color game section ekak. Rounded shapes saha bright image style ekka hondai.', image: 'https://images.unsplash.com/photo-1511882150382-421056c89033?auto=format&fit=crop&w=1200&q=80' },
+      { id: 5, title: 'Neon Racer', badge: 'Top Rated', rating: '★ 4.9', category: 'Racing', mode: 'Fast', tag: 'Neon', group: 'top', description: 'Modern racing card ekak widiyata use karanna puluwan neon look section ekak.', image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80' },
+      { id: 6, title: 'Logic Arena', badge: 'Strategy', rating: '★ 4.8', category: 'Strategy', mode: 'Mind', tag: 'Tactics', group: 'popular', description: 'Strategy type section walata hoda dark card style ekak. Text readability godak hondai.', image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80' }
+    ];
+
+    const authWrap = document.getElementById('authWrap');
+    const homeWrap = document.getElementById('homeWrap');
+    const aboutPage = document.getElementById('aboutPage');
+    const contactPage = document.getElementById('contactPage');
+    const gameModal = document.getElementById('gameModal');
+
+    const signupTab = document.getElementById('signupTab');
+    const signinTab = document.getElementById('signinTab');
+    const signupBox = document.getElementById('signupBox');
+    const signinBox = document.getElementById('signinBox');
+
+    const signupForm = document.getElementById('signupForm');
+    const signinForm = document.getElementById('signinForm');
+    const signupMessage = document.getElementById('signupMessage');
+    const signinMessage = document.getElementById('signinMessage');
+
+    const signupUsername = document.getElementById('signupUsername');
+    const signupEmail = document.getElementById('signupEmail');
+    const signupPassword = document.getElementById('signupPassword');
+    const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+    const signinEmail = document.getElementById('signinEmail');
+    const signinPassword = document.getElementById('signinPassword');
+
+    const homeUsername = document.getElementById('homeUsername');
+    const homeEmail = document.getElementById('homeEmail');
+    const homeMiniUser = document.getElementById('homeMiniUser');
+    const sideUser = document.getElementById('sideUser');
+    const playerEmailShort = document.getElementById('playerEmailShort');
+    const statGames = document.getElementById('statGames');
+    const statFavorites = document.getElementById('statFavorites');
+    const themeBtn = document.getElementById('themeBtn');
+
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const gameGrid = document.getElementById('gameGrid');
+    const favoritesGrid = document.getElementById('favoritesGrid');
+
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const modalImage = document.getElementById('modalImage');
+    const modalBadge = document.getElementById('modalBadge');
+    const modalCategory = document.getElementById('modalCategory');
+    const modalRating = document.getElementById('modalRating');
+    const modalMode = document.getElementById('modalMode');
+    const modalTag = document.getElementById('modalTag');
+
+    const passwordChecks = {
+      length: document.getElementById('checkLength'),
+      upper: document.getElementById('checkUpper'),
+      lower: document.getElementById('checkLower'),
+      number: document.getElementById('checkNumber'),
+      symbol: document.getElementById('checkSymbol')
+    };
+
+    let activeChip = 'all';
+    let currentUser = null;
+
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch { return []; }
+    }
+    function saveUsers(users) { localStorage.setItem(DB_KEY, JSON.stringify(users)); }
+    function setSession(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
+    function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } }
+    function clearSession() { localStorage.removeItem(SESSION_KEY); }
+    function normalizeEmail(email) { return email.trim().toLowerCase(); }
+    function normalizeUsername(username) { return username.trim().toLowerCase(); }
+    function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
+    function getFavorites(userId) {
+      try {
+        const all = JSON.parse(localStorage.getItem(FAVORITES_KEY)) || {};
+        return all[userId] || [];
+      } catch {
+        return [];
       }
-      function drawParticles() {
-        ctx.clearRect(0,0,width,height);
-        particles.forEach(p => {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-          ctx.fillStyle = p.color;
-          ctx.shadowColor = '#00f2fe';
-          ctx.shadowBlur = 12;
-          ctx.fill();
-          p.x += p.vx; p.y += p.vy;
-          if(p.x<0||p.x>width) p.vx*=-1;
-          if(p.y<0||p.y>height) p.vy*=-1;
-        });
-        requestAnimationFrame(drawParticles);
-      }
-      window.addEventListener('resize', ()=>{ initParticles(); });
-      initParticles(); drawParticles();
+    }
 
-      // ---------- AUTH + SESSION (same logic, polished) ----------
-      const DB_KEY = 'adv_auth_db_v2', SESSION_KEY = 'adv_session';
-      const authWrap = document.getElementById('authWrap'), homeWrap = document.getElementById('homeWrap');
-      const aboutPage = document.getElementById('aboutPage'), contactPage = document.getElementById('contactPage');
-      const signupTab=document.getElementById('signupTab'), signinTab=document.getElementById('signinTab');
-      const signupBox=document.getElementById('signupBox'), signinBox=document.getElementById('signinBox');
-      const signupMsg=document.getElementById('signupMessage'), signinMsg=document.getElementById('signinMessage');
-      const signupForm=document.getElementById('signupForm'), signinForm=document.getElementById('signinForm');
-      const suUser=document.getElementById('signupUsername'), suEmail=document.getElementById('signupEmail');
-      const suPass=document.getElementById('signupPassword'), suConfirm=document.getElementById('signupConfirmPassword');
-      const siEmail=document.getElementById('signinEmail'), siPass=document.getElementById('signinPassword');
-      const homeUser=document.getElementById('homeUsername'), homeEmailSpan=document.getElementById('homeEmail'), playerShort=document.getElementById('playerEmailShort');
-      const checks = { len:document.getElementById('checkLength'), up:document.getElementById('checkUpper'), low:document.getElementById('checkLower'), num:document.getElementById('checkNumber'), sym:document.getElementById('checkSymbol') };
+    function saveFavorites(userId, favorites) {
+      const all = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '{}');
+      all[userId] = favorites;
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(all));
+    }
 
-      function getUsers(){ return JSON.parse(localStorage.getItem(DB_KEY)) || []; }
-      function saveUsers(u){ localStorage.setItem(DB_KEY, JSON.stringify(u)); }
-      function setSession(user){ localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
-      function getSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)); }catch{ return null; } }
-      function clearSession(){ localStorage.removeItem(SESSION_KEY); }
-      function normEmail(e){ return e.trim().toLowerCase(); }
-      function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-      function isStrong(p){
-        return p.length>=8 && /[A-Z]/.test(p) && /[a-z]/.test(p) && /[0-9]/.test(p) && /[^A-Za-z0-9]/.test(p);
-      }
-      function updateChecks(p){
-        checks.len.classList.toggle('ok', p.length>=8);
-        checks.up.classList.toggle('ok', /[A-Z]/.test(p));
-        checks.low.classList.toggle('ok', /[a-z]/.test(p));
-        checks.num.classList.toggle('ok', /[0-9]/.test(p));
-        checks.sym.classList.toggle('ok', /[^A-Za-z0-9]/.test(p));
-      }
-      suPass.addEventListener('input', ()=>updateChecks(suPass.value));
+    function checkPasswordStrength(password) {
+      return {
+        length: password.length >= 8,
+        upper: /[A-Z]/.test(password),
+        lower: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        symbol: /[^A-Za-z0-9]/.test(password)
+      };
+    }
 
-      function showSignup(){ signupTab.classList.add('active'); signinTab.classList.remove('active'); signupBox.classList.add('active'); signinBox.classList.remove('active'); }
-      function showSignin(){ signinTab.classList.add('active'); signupTab.classList.remove('active'); signinBox.classList.add('active'); signupBox.classList.remove('active'); }
-      document.getElementById('gotoSignin').addEventListener('click', showSignin);
-      document.getElementById('gotoSignup').addEventListener('click', showSignup);
-      signupTab.addEventListener('click', showSignup); signinTab.addEventListener('click', showSignin);
+    function isStrongPassword(password) {
+      return Object.values(checkPasswordStrength(password)).every(Boolean);
+    }
 
-      function hideAllPages(){ authWrap.classList.add('hidden'); homeWrap.classList.remove('active'); aboutPage.classList.remove('active'); contactPage.classList.remove('active'); }
-      function openAuth(){ hideAllPages(); authWrap.classList.remove('hidden'); }
-      function showMainHome(){ hideAllPages(); homeWrap.classList.add('active'); }
-      window.showMainHome = showMainHome;
-      function openHome(user){
-        hideAllPages(); homeWrap.classList.add('active');
-        homeUser.textContent = user.username;
-        if(homeEmailSpan) homeEmailSpan.textContent = user.email;
-        playerShort.textContent = user.email.split('@')[0];
-        // count-up stats
-        animateNumber('statGames', 24);
-        loadGameCards(); // tilt cards
-      }
+    function updatePasswordUI(password) {
+      const result = checkPasswordStrength(password);
+      passwordChecks.length.classList.toggle('ok', result.length);
+      passwordChecks.upper.classList.toggle('ok', result.upper);
+      passwordChecks.lower.classList.toggle('ok', result.lower);
+      passwordChecks.number.classList.toggle('ok', result.number);
+      passwordChecks.symbol.classList.toggle('ok', result.symbol);
+    }
 
-      function animateNumber(id, final){ let el = document.getElementById(id); if(el) el.textContent = final; }
+    function showMessage(el, type, text) {
+      el.className = `message show ${type}`;
+      el.textContent = text;
+    }
 
-      // signup
-      signupForm.addEventListener('submit', e=>{
-        e.preventDefault(); signupMsg.className=''; signupMsg.textContent='';
-        let user = suUser.value.trim(), email = normEmail(suEmail.value), pass = suPass.value, conf = suConfirm.value;
-        if(!user||!email||!pass||!conf) return signupMsg.textContent='All fields required.';
-        if(user.length<3) return signupMsg.textContent='Username min 3 chars.';
-        if(!isValidEmail(email)) return signupMsg.textContent='Invalid email.';
-        if(!isStrong(pass)) return signupMsg.textContent='Password must meet all checks.';
-        if(pass!==conf) return signupMsg.textContent='Passwords mismatch.';
-        let users = getUsers();
-        if(users.some(u=>u.email===email)) return signupMsg.textContent='Email already registered.';
-        if(users.some(u=>u.username.toLowerCase()===user.toLowerCase())) return signupMsg.textContent='Username taken.';
-        let newUser = { id:Date.now(), username:user, email, password:pass };
-        users.push(newUser); saveUsers(users); setSession(newUser);
-        signupMsg.style.color='#2eec96'; signupMsg.textContent='Success! Redirecting...';
-        setTimeout(()=>{ openHome(newUser); },600);
+    function hideMessage(el) {
+      el.className = 'message';
+      el.textContent = '';
+    }
+
+    function showSignup() {
+      signupTab.classList.add('active');
+      signinTab.classList.remove('active');
+      signupBox.classList.add('active');
+      signinBox.classList.remove('active');
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+    }
+
+    function showSignin() {
+      signinTab.classList.add('active');
+      signupTab.classList.remove('active');
+      signinBox.classList.add('active');
+      signupBox.classList.remove('active');
+      hideMessage(signupMessage);
+      hideMessage(signinMessage);
+    }
+
+    function hideAllPages() {
+      authWrap.classList.add('hidden');
+      homeWrap.classList.remove('active');
+      aboutPage.classList.remove('active');
+      contactPage.classList.remove('active');
+    }
+
+    function showMainHome() {
+      hideAllPages();
+      homeWrap.classList.add('active');
+    }
+
+    function openPage(pageId) {
+      hideAllPages();
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function openAuth() {
+      aboutPage.classList.remove('active');
+      contactPage.classList.remove('active');
+      homeWrap.classList.remove('active');
+      authWrap.classList.remove('hidden');
+    }
+
+    function applyTheme(theme) {
+      document.body.classList.toggle('light-theme', theme === 'light');
+      localStorage.setItem(THEME_KEY, theme);
+      themeBtn.textContent = theme === 'light' ? 'Dark Mode' : 'Light Mode';
+    }
+
+    function toggleTheme() {
+      const next = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+      applyTheme(next);
+    }
+
+    function getFilteredGames() {
+      const query = searchInput.value.trim().toLowerCase();
+      const category = categoryFilter.value;
+      return games.filter(game => {
+        const matchesQuery = !query || game.title.toLowerCase().includes(query) || game.category.toLowerCase().includes(query) || game.tag.toLowerCase().includes(query);
+        const matchesCategory = category === 'all' || game.category === category;
+        const matchesChip = activeChip === 'all' || game.group === activeChip || game.badge.toLowerCase() === activeChip;
+        return matchesQuery && matchesCategory && matchesChip;
       });
-      signinForm.addEventListener('submit', e=>{
-        e.preventDefault(); signinMsg.textContent='';
-        let email = normEmail(siEmail.value), pass = siPass.value;
-        if(!email||!pass) return signinMsg.textContent='Enter credentials.';
-        let users = getUsers(); let found = users.find(u=>u.email===email && u.password===pass);
-        if(!found) return signinMsg.textContent='Invalid email/password.';
-        setSession(found); signinMsg.style.color='#2eec96'; signinMsg.textContent='Signing in...';
-        setTimeout(()=> openHome(found), 400);
-      });
-      document.getElementById('clearDatabase').addEventListener('click',()=>{ localStorage.removeItem(DB_KEY); clearSession(); alert('DB cleared'); });
-      document.getElementById('logoutBtn').addEventListener('click',()=>{ clearSession(); openAuth(); showSignin(); });
-      // page navigation
-      document.querySelectorAll('[data-page]').forEach(b=> b.addEventListener('click', ()=>{
-        let id = b.getAttribute('data-page'); hideAllPages(); document.getElementById(id).classList.add('active');
-      }));
-      document.querySelectorAll('[data-page-target]').forEach(b=>{ b.addEventListener('click', ()=>{ showMainHome(); let el=document.getElementById(b.getAttribute('data-page-target')); if(el) el.scrollIntoView({behavior:'smooth'}); }); });
-      window.scrollToGames = ()=> document.getElementById('gamesSection')?.scrollIntoView({behavior:'smooth'});
+    }
 
-      // ---------- ADVANCED TILT CARDS ----------
-      const gameData = [
-        { title:'CYBER RUSH', img:'https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg?auto=compress&cs=tinysrgb&w=600', rating:4.9, tags:['Arcade','Action'] },
-        { title:'NEBULA PUZZLE', img:'https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=600', rating:4.8, tags:['Puzzle','Brain'] },
-        { title:'SKY DOMINION', img:'https://images.pexels.com/photos/270404/pexels-photo-270404.jpeg?auto=compress&cs=tinysrgb&w=600', rating:5.0, tags:['Battle','Shooter'] },
-        { title:'CHROMA MATCH', img:'https://images.pexels.com/photos/1103534/pexels-photo-1103534.jpeg?auto=compress&cs=tinysrgb&w=600', rating:4.7, tags:['Kids','Color'] },
-        { title:'NEON DRIFT', img:'https://images.pexels.com/photos/1146134/pexels-photo-1146134.jpeg?auto=compress&cs=tinysrgb&w=600', rating:4.9, tags:['Racing','Neon'] },
-        { title:'LOGIC ARENA', img:'https://images.pexels.com/photos/256502/pexels-photo-256502.jpeg?auto=compress&cs=tinysrgb&w=600', rating:4.8, tags:['Strategy'] }
-      ];
-      function loadGameCards(){
-        const grid = document.getElementById('gameGridContainer');
-        grid.innerHTML = '';
-        gameData.forEach(g => {
-          let card = document.createElement('article'); card.className = 'game-card';
-          card.innerHTML = `<div class="game-image" style="background-image:url('${g.img}');"><div class="badge-live">🔥 LIVE</div></div>
-            <div class="game-body"><div style="display:flex; justify-content:space-between;"><h3>${g.title}</h3><span>★ ${g.rating}</span></div>
-            <div style="margin:10px 0;">${g.tags.map(t=>`<span class="tag" style="margin-right:8px;">${t}</span>`).join('')}</div>
-            <button class="action-btn" style="padding:0.6rem;">Play Now →</button></div>`;
-          grid.appendChild(card);
-          enableTilt(card);
-        });
+    function createGameCard(game, favorites) {
+      const isFavorite = favorites.includes(game.id);
+      return `
+        <article class="game-card">
+          <div class="game-image" style="background-image:url('${game.image}');">
+            <div class="badge-live">${game.badge}</div>
+            <button class="favorite-btn ${isFavorite ? 'active' : ''}" data-favorite="${game.id}">${isFavorite ? '♥' : '♡'}</button>
+          </div>
+          <div class="game-body">
+            <div class="game-title-row">
+              <h3>${game.title}</h3>
+              <div class="rating">${game.rating}</div>
+            </div>
+            <p>${game.description}</p>
+            <div class="meta-row">
+              <div class="meta-chip">${game.category}</div>
+              <div class="meta-chip">${game.mode}</div>
+              <div class="meta-chip">${game.tag}</div>
+            </div>
+            <div class="card-actions">
+              <a class="play-btn" href="#">Play Now</a>
+              <button class="nav-btn" data-preview="${game.id}">Details</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderGames() {
+      if (!currentUser) return;
+      const favorites = getFavorites(currentUser.id);
+      const filtered = getFilteredGames();
+      gameGrid.innerHTML = filtered.length
+        ? filtered.map(game => createGameCard(game, favorites)).join('')
+        : `<div class="page-card"><h3>No games found</h3><p>Search hari filter wenas karala aye balanna.</p></div>`;
+
+      const favoriteGames = games.filter(game => favorites.includes(game.id));
+      favoritesGrid.innerHTML = favoriteGames.length
+        ? favoriteGames.map(game => createGameCard(game, favorites)).join('')
+        : `<div class="page-card"><h3>No favorites yet</h3><p>Heart button eka click karala favorite games add karanna.</p></div>`;
+
+      statGames.textContent = String(filtered.length);
+      statFavorites.textContent = String(favoriteGames.length);
+      attachCardEvents();
+    }
+
+    function attachCardEvents() {
+      document.querySelectorAll('[data-preview]').forEach(button => {
+        button.addEventListener('click', () => openGameModal(Number(button.getAttribute('data-preview'))));
+      });
+      document.querySelectorAll('[data-favorite]').forEach(button => {
+        button.addEventListener('click', () => toggleFavorite(Number(button.getAttribute('data-favorite'))));
+      });
+    }
+
+    function toggleFavorite(gameId) {
+      const favorites = getFavorites(currentUser.id);
+      const index = favorites.indexOf(gameId);
+      if (index >= 0) favorites.splice(index, 1); else favorites.push(gameId);
+      saveFavorites(currentUser.id, favorites);
+      renderGames();
+    }
+
+    function openGameModal(gameId) {
+      const game = games.find(item => item.id === gameId);
+      if (!game) return;
+      modalTitle.textContent = game.title;
+      modalDescription.textContent = game.description;
+      modalImage.style.backgroundImage = `url('${game.image}')`;
+      modalBadge.textContent = game.badge;
+      modalCategory.textContent = game.category;
+      modalRating.textContent = game.rating;
+      modalMode.textContent = game.mode;
+      modalTag.textContent = game.tag;
+      gameModal.classList.add('active');
+    }
+
+    function closeGameModal() { gameModal.classList.remove('active'); }
+    window.closeGameModal = closeGameModal;
+
+    function openHome(user) {
+      currentUser = user;
+      hideAllPages();
+      homeWrap.classList.add('active');
+      homeUsername.textContent = user.username;
+      homeEmail.textContent = user.email;
+      homeMiniUser.textContent = user.username;
+      sideUser.textContent = user.username;
+      playerEmailShort.textContent = user.email.split('@')[0];
+      renderGames();
+    }
+
+    function scrollToGames() {
+      document.getElementById('gamesSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    function scrollToTopHome() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    window.scrollToGames = scrollToGames;
+    window.scrollToTopHome = scrollToTopHome;
+    window.showMainHome = showMainHome;
+
+    signupTab.addEventListener('click', showSignup);
+    signinTab.addEventListener('click', showSignin);
+    document.getElementById('gotoSignin').addEventListener('click', showSignin);
+    document.getElementById('gotoSignup').addEventListener('click', showSignup);
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      clearSession();
+      currentUser = null;
+      openAuth();
+      showSignin();
+    });
+
+    document.getElementById('clearDatabase').addEventListener('click', () => {
+      localStorage.removeItem(DB_KEY);
+      localStorage.removeItem(FAVORITES_KEY);
+      clearSession();
+      alert('Local database cleared.');
+    });
+
+    document.querySelectorAll('[data-toggle]').forEach(button => {
+      button.addEventListener('click', () => {
+        const input = document.getElementById(button.getAttribute('data-toggle'));
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        button.textContent = isPassword ? 'Hide' : 'Show';
+      });
+    });
+
+    document.querySelectorAll('[data-page]').forEach(button => {
+      button.addEventListener('click', () => openPage(button.getAttribute('data-page')));
+    });
+
+    document.querySelectorAll('[data-page-target]').forEach(button => {
+      button.addEventListener('click', () => {
+        showMainHome();
+        const target = document.getElementById(button.getAttribute('data-page-target'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    document.querySelectorAll('[data-chip]').forEach(button => {
+      button.addEventListener('click', () => {
+        activeChip = button.getAttribute('data-chip');
+        document.querySelectorAll('[data-chip]').forEach(chip => chip.style.outline = 'none');
+        button.style.outline = '2px solid rgba(56,189,248,.45)';
+        renderGames();
+      });
+    });
+
+    searchInput.addEventListener('input', renderGames);
+    categoryFilter.addEventListener('change', renderGames);
+    signupPassword.addEventListener('input', () => updatePasswordUI(signupPassword.value));
+    themeBtn.addEventListener('click', toggleTheme);
+    document.getElementById('closeModal').addEventListener('click', closeGameModal);
+    gameModal.addEventListener('click', (e) => { if (e.target === gameModal) closeGameModal(); });
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage(signupMessage);
+      const username = signupUsername.value.trim();
+      const email = normalizeEmail(signupEmail.value);
+      const password = signupPassword.value;
+      const confirmPassword = signupConfirmPassword.value;
+      const usernameNormalized = normalizeUsername(username);
+
+      if (!username || !email || !password || !confirmPassword) {
+        showMessage(signupMessage, 'error', 'Please fill all sign-up fields.');
+        return;
       }
-      function enableTilt(card) {
-        card.addEventListener('mousemove', e => {
-          const rect = card.getBoundingClientRect();
-          const x = e.clientX - rect.left, y = e.clientY - rect.top;
-          const centerX = rect.width/2, centerY = rect.height/2;
-          const rotateY = ((x - centerX) / centerX) * 8;
-          const rotateX = ((centerY - y) / centerY) * 6;
-          card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
-        });
-        card.addEventListener('mouseleave', ()=> { card.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0)'; });
+      if (username.length < 3) {
+        showMessage(signupMessage, 'error', 'User name must have at least 3 characters.');
+        return;
+      }
+      if (!isValidEmail(email)) {
+        showMessage(signupMessage, 'error', 'Please enter a correct email address.');
+        return;
+      }
+      if (!isStrongPassword(password)) {
+        showMessage(signupMessage, 'error', 'Password must include uppercase, lowercase, number, symbol, and 8+ characters.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        showMessage(signupMessage, 'error', 'Confirm password does not match.');
+        return;
       }
 
-      // session check
-      window.addEventListener('load', ()=>{
-        let sess = getSession();
-        if(sess) openHome(sess);
-        else { openAuth(); showSignup(); }
-        updateChecks('');
-      });
-    })();
+      const users = getUsers();
+      const emailExists = users.some(user => user.email === email);
+      const usernameExists = users.some(user => normalizeUsername(user.username) === usernameNormalized);
+      if (emailExists) {
+        showMessage(signupMessage, 'error', 'This email already has an account. Please sign in.');
+        return;
+      }
+      if (usernameExists) {
+        showMessage(signupMessage, 'error', 'This user name is already taken. Choose another one.');
+        return;
+      }
+
+      const newUser = { id: Date.now(), username, email, password };
+      users.push(newUser);
+      saveUsers(users);
+      setSession({ id: newUser.id, username: newUser.username, email: newUser.email });
+      showMessage(signupMessage, 'success', 'Account created successfully. Redirecting to dashboard...');
+      signupForm.reset();
+      updatePasswordUI('');
+      setTimeout(() => openHome(newUser), 700);
+    });
+
+    signinForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage(signinMessage);
+      const email = normalizeEmail(signinEmail.value);
+      const password = signinPassword.value;
+
+      if (!email || !password) {
+        showMessage(signinMessage, 'error', 'Please enter email and password.');
+        return;
+      }
+      if (!isValidEmail(email)) {
+        showMessage(signinMessage, 'error', 'Please enter a correct email address.');
+        return;
+      }
+
+      const foundUser = getUsers().find(user => user.email === email && user.password === password);
+      if (!foundUser) {
+        showMessage(signinMessage, 'error', 'Invalid email or password.');
+        return;
+      }
+
+      setSession({ id: foundUser.id, username: foundUser.username, email: foundUser.email });
+      showMessage(signinMessage, 'success', 'Sign in successful. Redirecting to dashboard...');
+      signinForm.reset();
+      setTimeout(() => openHome(foundUser), 500);
+    });
+
+    window.addEventListener('load', () => {
+      updatePasswordUI('');
+      applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+      const sessionUser = getSession();
+      if (sessionUser) {
+        openHome(sessionUser);
+      } else {
+        openAuth();
+        showSignup();
+      }
+      const firstChip = document.querySelector('[data-chip="all"]');
+      if (firstChip) firstChip.style.outline = '2px solid rgba(56,189,248,.45)';
+    });
   </script>
-  <style>
-    /* extra micro styles */
-    .message { padding: 0.8rem; border-radius: 24px; background: rgba(255,80,120,0.15); color: #ffb0b0; }
-    .message.success { background: rgba(46,236,150,0.15); color: #b9ffe0; }
-    .hidden { display: none !important; }
-    .stat-number { transition: all 0.5s; }
-    .game-card { transition: transform 0.15s ease-out, box-shadow 0.3s; }
-  </style>
 </body>
 </html>
