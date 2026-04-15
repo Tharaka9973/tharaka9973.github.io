@@ -53,11 +53,12 @@
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 25%),
-        radial-gradient(circle at top right, rgba(139, 92, 246, 0.14), transparent 20%),
-        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.08), transparent 18%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.18), transparent 20%),
+        radial-gradient(circle at 80% 15%, rgba(139, 92, 246, 0.18), transparent 22%),
+        radial-gradient(circle at 50% 80%, rgba(34, 197, 94, 0.08), transparent 18%),
+        linear-gradient(135deg, #030712 0%, #081120 35%, #0f172a 70%, #111827 100%);
       overflow-x: hidden;
+      position: relative;
     }
 
     a {
@@ -74,8 +75,162 @@
       display: grid;
       place-items: center;
       padding: 24px;
+      position: relative;
+      overflow: hidden;
     }
 
+    .auth-shell {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .auth-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .auth-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at center, rgba(56,189,248,.08), transparent 35%),
+        linear-gradient(to bottom, rgba(2,6,23,.15), rgba(2,6,23,.45));
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.25));
+      animation: gridMove 16s linear infinite;
+      opacity: .28;
+    }
+
+    .scan-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 140px;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(56,189,248,.08),
+        rgba(56,189,248,.18),
+        transparent
+      );
+      filter: blur(10px);
+      animation: scanMove 6s linear infinite;
+      opacity: .7;
+    }
+
+    .floating-controller,
+    .floating-coin,
+    .floating-cube,
+    .floating-ring {
+      position: absolute;
+      opacity: .16;
+      filter: drop-shadow(0 0 18px rgba(56,189,248,.18));
+    }
+
+    .floating-controller {
+      width: 220px;
+      height: 220px;
+      left: 4%;
+      top: 12%;
+      border: 2px solid rgba(56,189,248,.22);
+      border-radius: 42% 58% 55% 45% / 52% 41% 59% 48%;
+      animation: floatSlow 8s ease-in-out infinite;
+    }
+
+    .floating-controller::before,
+    .floating-controller::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(56,189,248,.22);
+    }
+
+    .floating-controller::before {
+      width: 18px;
+      height: 18px;
+      left: 58px;
+      top: 92px;
+      box-shadow: 34px 0 0 rgba(56,189,248,.22);
+    }
+
+    .floating-controller::after {
+      width: 52px;
+      height: 10px;
+      left: 84px;
+      top: 102px;
+      border-radius: 999px;
+    }
+
+    .floating-coin {
+      width: 90px;
+      height: 90px;
+      right: 10%;
+      top: 18%;
+      border-radius: 50%;
+      border: 6px solid rgba(251,191,36,.24);
+      box-shadow: inset 0 0 0 8px rgba(251,191,36,.08);
+      animation: floatSlow 6.5s ease-in-out infinite 1s;
+    }
+
+    .floating-cube {
+      width: 110px;
+      height: 110px;
+      right: 12%;
+      bottom: 18%;
+      border: 2px solid rgba(139,92,246,.26);
+      transform: rotate(45deg);
+      animation: rotateCube 10s linear infinite;
+    }
+
+    .floating-ring {
+      width: 260px;
+      height: 260px;
+      left: 8%;
+      bottom: 8%;
+      border-radius: 50%;
+      border: 2px dashed rgba(34,197,94,.18);
+      animation: spinRing 18s linear infinite;
+    }
+
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .particles span {
+      position: absolute;
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      animation: particleUp linear infinite;
+    }
+
+    .particles span:nth-child(1)  { left: 8%;  animation-duration: 13s; animation-delay: 0s;  top: 100%; }
+    .particles span:nth-child(2)  { left: 16%; animation-duration: 10s; animation-delay: 2s;  top: 100%; width: 4px; height: 4px; }
+    .particles span:nth-child(3)  { left: 24%; animation-duration: 15s; animation-delay: 4s;  top: 100%; }
+    .particles span:nth-child(4)  { left: 35%; animation-duration: 11s; animation-delay: 1s;  top: 100%; width: 5px; height: 5px; }
+    .particles span:nth-child(5)  { left: 48%; animation-duration: 14s; animation-delay: 5s;  top: 100%; }
+    .particles span:nth-child(6)  { left: 58%; animation-duration: 9s;  animation-delay: 2s;  top: 100%; width: 4px; height: 4px; }
+    .particles span:nth-child(7)  { left: 68%; animation-duration: 12s; animation-delay: 0s;  top: 100%; }
+    .particles span:nth-child(8)  { left: 76%; animation-duration: 16s; animation-delay: 3s;  top: 100%; }
+    .particles span:nth-child(9)  { left: 84%; animation-duration: 10s; animation-delay: 6s;  top: 100%; width: 5px; height: 5px; }
+    .particles span:nth-child(10) { left: 92%; animation-duration: 14s; animation-delay: 1s;  top: 100%; }
 
     .hero-panel,
     .form-panel,
@@ -190,11 +345,33 @@
 
     .form-panel {
       width: 500px;
+      max-width: 100%;
       padding: 26px;
-      min-height: 760px;
+      min-height: auto;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      position: relative;
+      z-index: 6;
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.45),
+        0 0 40px rgba(56,189,248,.08);
+    }
+
+    .form-panel::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 28px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(56,189,248,.35), rgba(139,92,246,.25), rgba(34,197,94,.18));
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      pointer-events: none;
     }
 
     .tabs {
@@ -206,6 +383,8 @@
       background: rgba(255,255,255,.05);
       border: 1px solid var(--border);
       margin-bottom: 18px;
+      position: relative;
+      z-index: 2;
     }
 
     .tab-btn, .action-btn, .ghost-btn, .nav-btn, .play-btn, .logout-btn, .icon-btn, .theme-btn, .favorite-btn, .modal-close, .search-btn {
@@ -231,7 +410,7 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
     }
 
-    .form-box { display: none; }
+    .form-box { display: none; position: relative; z-index: 2; }
     .form-box.active { display: block; }
     .form-title { margin: 10px 0 6px; font-size: 34px; }
     .form-subtitle { margin: 0 0 22px; color: var(--muted); }
@@ -324,7 +503,7 @@
       border: 1px solid var(--border);
     }
 
-    .switch-text { margin-top: 16px; text-align: center; color: var(--muted); font-size: 14px; }
+    .switch-text { margin-top: 16px; text-align: center; color: var(--muted); font-size: 14px; position: relative; z-index: 2; }
     .switch-link { color: var(--primary); cursor: pointer; font-weight: 700; }
 
     .home-wrap, .pages-wrap { display: none; min-height: 100vh; padding: 20px; }
@@ -540,6 +719,39 @@
       0%,100% { transform: perspective(1200px) rotateY(-8deg) rotateX(6deg) translateY(0); }
       50% { transform: perspective(1200px) rotateY(-6deg) rotateX(4deg) translateY(-10px); }
     }
+    @keyframes gridMove {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(42px); }
+    }
+    @keyframes scanMove {
+      0%   { top: -18%; }
+      100% { top: 110%; }
+    }
+    @keyframes floatSlow {
+      0%,100% { transform: translateY(0) translateX(0); }
+      50%     { transform: translateY(-18px) translateX(10px); }
+    }
+    @keyframes rotateCube {
+      0%   { transform: rotate(45deg); }
+      100% { transform: rotate(405deg); }
+    }
+    @keyframes spinRing {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes particleUp {
+      0% {
+        transform: translateY(0) scale(.7);
+        opacity: 0;
+      }
+      10% {
+        opacity: .8;
+      }
+      100% {
+        transform: translateY(-115vh) scale(1.2);
+        opacity: 0;
+      }
+    }
 
     @media (max-width: 1180px) {
       .dashboard-layout, .hero-home, .auth-shell, .modal-hero { grid-template-columns: 1fr; }
@@ -556,11 +768,28 @@
       .home-content, .topbar { padding-left: 16px; padding-right: 16px; }
       .hero-home, .cta-banner, .page-card, .modal-box { padding: 20px; }
       .game-screen { transform: none; }
+      .form-panel { width: 100%; }
     }
   </style>
 </head>
 <body>
   <div id="authWrap" class="auth-wrap">
+    <div class="auth-bg">
+      <div class="auth-overlay"></div>
+      <div class="grid-lines"></div>
+      <div class="scan-line"></div>
+
+      <div class="floating-controller"></div>
+      <div class="floating-coin"></div>
+      <div class="floating-cube"></div>
+      <div class="floating-ring"></div>
+
+      <div class="particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
     <div class="auth-shell">
       <section class="form-panel">
         <div class="tabs">
@@ -999,13 +1228,34 @@
     function getUsers() {
       try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; } catch { return []; }
     }
-    function saveUsers(users) { localStorage.setItem(DB_KEY, JSON.stringify(users)); }
-    function setSession(user) { localStorage.setItem(SESSION_KEY, JSON.stringify(user)); }
-    function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; } }
-    function clearSession() { localStorage.removeItem(SESSION_KEY); }
-    function normalizeEmail(email) { return email.trim().toLowerCase(); }
-    function normalizeUsername(username) { return username.trim().toLowerCase(); }
-    function isValidEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
+    function saveUsers(users) {
+      localStorage.setItem(DB_KEY, JSON.stringify(users));
+    }
+
+    function setSession(user) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+
+    function getSession() {
+      try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch { return null; }
+    }
+
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+    }
+
+    function normalizeEmail(email) {
+      return email.trim().toLowerCase();
+    }
+
+    function normalizeUsername(username) {
+      return username.trim().toLowerCase();
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
     function getFavorites(userId) {
       try {
@@ -1149,8 +1399,10 @@
 
     function renderGames() {
       if (!currentUser) return;
+
       const favorites = getFavorites(currentUser.id);
       const filtered = getFilteredGames();
+
       gameGrid.innerHTML = filtered.length
         ? filtered.map(game => createGameCard(game, favorites)).join('')
         : `<div class="page-card"><h3>No games found</h3><p>Search hari filter wenas karala aye balanna.</p></div>`;
@@ -1169,6 +1421,7 @@
       document.querySelectorAll('[data-preview]').forEach(button => {
         button.addEventListener('click', () => openGameModal(Number(button.getAttribute('data-preview'))));
       });
+
       document.querySelectorAll('[data-favorite]').forEach(button => {
         button.addEventListener('click', () => toggleFavorite(Number(button.getAttribute('data-favorite'))));
       });
@@ -1177,7 +1430,13 @@
     function toggleFavorite(gameId) {
       const favorites = getFavorites(currentUser.id);
       const index = favorites.indexOf(gameId);
-      if (index >= 0) favorites.splice(index, 1); else favorites.push(gameId);
+
+      if (index >= 0) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(gameId);
+      }
+
       saveFavorites(currentUser.id, favorites);
       renderGames();
     }
@@ -1185,6 +1444,7 @@
     function openGameModal(gameId) {
       const game = games.find(item => item.id === gameId);
       if (!game) return;
+
       modalTitle.textContent = game.title;
       modalDescription.textContent = game.description;
       modalImage.style.backgroundImage = `url('${game.image}')`;
@@ -1196,7 +1456,10 @@
       gameModal.classList.add('active');
     }
 
-    function closeGameModal() { gameModal.classList.remove('active'); }
+    function closeGameModal() {
+      gameModal.classList.remove('active');
+    }
+
     window.closeGameModal = closeGameModal;
 
     function openHome(user) {
@@ -1214,7 +1477,11 @@
     function scrollToGames() {
       document.getElementById('gamesSection').scrollIntoView({ behavior: 'smooth' });
     }
-    function scrollToTopHome() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    function scrollToTopHome() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     window.scrollToGames = scrollToGames;
     window.scrollToTopHome = scrollToTopHome;
     window.showMainHome = showMainHome;
@@ -1223,18 +1490,12 @@
     signinTab.addEventListener('click', showSignin);
     document.getElementById('gotoSignin').addEventListener('click', showSignin);
     document.getElementById('gotoSignup').addEventListener('click', showSignup);
+
     document.getElementById('logoutBtn').addEventListener('click', () => {
       clearSession();
       currentUser = null;
       openAuth();
       showSignin();
-    });
-
-    document.getElementById('clearDatabase').addEventListener('click', () => {
-      localStorage.removeItem(DB_KEY);
-      localStorage.removeItem(FAVORITES_KEY);
-      clearSession();
-      alert('Local database cleared.');
     });
 
     document.querySelectorAll('[data-toggle]').forEach(button => {
@@ -1272,11 +1533,14 @@
     signupPassword.addEventListener('input', () => updatePasswordUI(signupPassword.value));
     themeBtn.addEventListener('click', toggleTheme);
     document.getElementById('closeModal').addEventListener('click', closeGameModal);
-    gameModal.addEventListener('click', (e) => { if (e.target === gameModal) closeGameModal(); });
+    gameModal.addEventListener('click', (e) => {
+      if (e.target === gameModal) closeGameModal();
+    });
 
     signupForm.addEventListener('submit', (e) => {
       e.preventDefault();
       hideMessage(signupMessage);
+
       const username = signupUsername.value.trim();
       const email = normalizeEmail(signupEmail.value);
       const password = signupPassword.value;
@@ -1287,18 +1551,22 @@
         showMessage(signupMessage, 'error', 'Please fill all sign-up fields.');
         return;
       }
+
       if (username.length < 3) {
         showMessage(signupMessage, 'error', 'User name must have at least 3 characters.');
         return;
       }
+
       if (!isValidEmail(email)) {
         showMessage(signupMessage, 'error', 'Please enter a correct email address.');
         return;
       }
+
       if (!isStrongPassword(password)) {
         showMessage(signupMessage, 'error', 'Password must include uppercase, lowercase, number, symbol, and 8+ characters.');
         return;
       }
+
       if (password !== confirmPassword) {
         showMessage(signupMessage, 'error', 'Confirm password does not match.');
         return;
@@ -1307,10 +1575,12 @@
       const users = getUsers();
       const emailExists = users.some(user => user.email === email);
       const usernameExists = users.some(user => normalizeUsername(user.username) === usernameNormalized);
+
       if (emailExists) {
         showMessage(signupMessage, 'error', 'This email already has an account. Please sign in.');
         return;
       }
+
       if (usernameExists) {
         showMessage(signupMessage, 'error', 'This user name is already taken. Choose another one.');
         return;
@@ -1323,12 +1593,14 @@
       showMessage(signupMessage, 'success', 'Account created successfully. Redirecting to dashboard...');
       signupForm.reset();
       updatePasswordUI('');
+
       setTimeout(() => openHome(newUser), 700);
     });
 
     signinForm.addEventListener('submit', (e) => {
       e.preventDefault();
       hideMessage(signinMessage);
+
       const email = normalizeEmail(signinEmail.value);
       const password = signinPassword.value;
 
@@ -1336,12 +1608,14 @@
         showMessage(signinMessage, 'error', 'Please enter email and password.');
         return;
       }
+
       if (!isValidEmail(email)) {
         showMessage(signinMessage, 'error', 'Please enter a correct email address.');
         return;
       }
 
       const foundUser = getUsers().find(user => user.email === email && user.password === password);
+
       if (!foundUser) {
         showMessage(signinMessage, 'error', 'Invalid email or password.');
         return;
@@ -1350,12 +1624,24 @@
       setSession({ id: foundUser.id, username: foundUser.username, email: foundUser.email });
       showMessage(signinMessage, 'success', 'Sign in successful. Redirecting to dashboard...');
       signinForm.reset();
+
       setTimeout(() => openHome(foundUser), 500);
     });
+
+    const clearDatabaseBtn = document.getElementById('clearDatabase');
+    if (clearDatabaseBtn) {
+      clearDatabaseBtn.addEventListener('click', () => {
+        localStorage.removeItem(DB_KEY);
+        localStorage.removeItem(FAVORITES_KEY);
+        clearSession();
+        alert('Local database cleared.');
+      });
+    }
 
     window.addEventListener('load', () => {
       updatePasswordUI('');
       applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
       const sessionUser = getSession();
       if (sessionUser) {
         openHome(sessionUser);
@@ -1363,8 +1649,11 @@
         openAuth();
         showSignup();
       }
+
       const firstChip = document.querySelector('[data-chip="all"]');
-      if (firstChip) firstChip.style.outline = '2px solid rgba(56,189,248,.45)';
+      if (firstChip) {
+        firstChip.style.outline = '2px solid rgba(56,189,248,.45)';
+      }
     });
   </script>
 </body>
